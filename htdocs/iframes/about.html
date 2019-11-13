@@ -1,0 +1,82 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Burd IRC Beta</title>
+		<link href="https://fonts.googleapis.com/css?family=Montserrat:300i,400,600,600i,900,900i&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		
+		<link href="../style.css" rel="stylesheet">
+		<style>
+			div.title{
+				background:var(--frame-bg);
+				padding:5px;
+				font-size:17px;
+				font-weight:600;
+				border-bottom:1px solid rgba(0,0,0,0.5);
+			}
+			div.tabs{
+				background:var(--nav-pane-bg);
+				float:left;
+				width:150px;
+				height:369px;
+			}
+			div.tab{
+				padding:2px;
+			}
+			div.selected-tab{
+				background:var(--list-selected-bg);
+				color:var(--list-selected-color);
+			}
+			div.pane{
+				padding:5px;
+				height:357px;
+				float:right;
+				width:440px;
+			}
+		</style>
+		
+		<script>
+			var settings = {
+				language: "english.json"
+			};
+			var language = {};
+			
+			$(function(){
+				setTimeout(function(){
+					window.parent.postMessage({command: "show-main-iframe"}, "*");
+				},100);
+				window.parent.postMessage({command: "iframe-size", width: "600px", height: "400px"}, "*");
+				$("div.tab").on("click", function(e){
+					$("div.selected-tab").removeClass("selected-tab");
+					$(this).addClass("selected-tab");
+				});
+				$("body").on("click", "div.checkbox", function(e){
+					if($(this).hasClass("checked")){
+						$(this).removeClass("checked");
+					}else{
+						$(this).addClass("checked");
+					}
+				});
+				translate();
+			})
+			
+			function translate(){
+				$.getJSON( "../languages/" + settings.language, function( json ) {
+					$("div,span").each(function(e){
+						var t = $(this).html();
+						if(json[t] != undefined) $(this).text(json[t]);
+					});
+					$("input").each(function(e){
+						var t = $(this).val();
+						if(json[t] != undefined) $(this).val(json[t]);
+					});
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<div class="title">$about</div>
+		</div>
+	</body>
+</html>

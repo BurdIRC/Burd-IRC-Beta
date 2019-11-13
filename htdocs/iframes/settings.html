@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Burd IRC Beta</title>
+		<link href="https://fonts.googleapis.com/css?family=Montserrat:300i,400,600,600i,900,900i&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		
+		<link href="../style.css" rel="stylesheet">
+		<style>
+			div.title{
+				background:var(--frame-bg);
+				padding:5px;
+				font-size:17px;
+				font-weight:600;
+				border-bottom:1px solid rgba(0,0,0,0.5);
+			}
+			div.tabs{
+				background:var(--nav-pane-bg);
+				float:left;
+				width:150px;
+				height:369px;
+			}
+			div.tab{
+				padding:2px;
+			}
+			div.selected-tab{
+				background:var(--list-selected-bg);
+				color:var(--list-selected-color);
+			}
+			div.pane{
+				padding:5px;
+				height:357px;
+				float:right;
+				width:440px;
+			}
+			div.pane{
+				display:none;
+			}
+			div.t-title{
+				float:left;
+				width:100px;
+				font-weight:600;
+			}
+			div.t-text{
+				float:left;
+				width:200px;
+			}
+			div.t-area{
+				margin-top:5px;
+			}
+		</style>
+		
+		<script>
+			var settings = {
+				language: "english.json"
+			};
+			var language = {};
+			
+			$(function(){
+				setTimeout(function(){
+					window.parent.postMessage({command: "show-main-iframe"}, "*");
+				},100);
+				
+				window.parent.postMessage({command: "iframe-size", width: "600px", height: "400px"}, "*");
+				window.parent.postMessage({command: "get-version"}, "*");
+				
+				$("div.tab").on("click", function(e){
+					$("div.selected-tab").removeClass("selected-tab");
+					$(this).addClass("selected-tab");
+					$("div.pane").hide();
+					$("div#" + $(this).attr("pane")).show();
+				});
+				
+				$("body").on("click", "div.checkbox", function(e){
+					if($(this).hasClass("checked")){
+						$(this).removeClass("checked");
+					}else{
+						$(this).addClass("checked");
+					}
+				});
+				
+				window.addEventListener("message", function(e){
+					switch(e.data.command){
+						case "version":
+							$("span.version").text(e.data.version);
+							break;
+						case "iframe-args":
+							if(e.data.args.tab){
+								$("div.tab[pane='" + e.data.args.tab + "']").click();
+							}
+							break;
+					}
+				}, false);
+				
+				translate();
+				
+			})
+			
+			function translate(){
+				$.getJSON( "../languages/" + settings.language, function( json ) {
+					$("div,span").each(function(e){
+						var t = $(this).html();
+						if(json[t] != undefined) $(this).text(json[t]);
+					});
+					$("input").each(function(e){
+						var t = $(this).val();
+						if(json[t] != undefined) $(this).val(json[t]);
+					});
+				});
+			}
+		</script>
+	</head>
+	<body>
+		<div class="title"><span>$settings</span> <div class="quit">&nbsp;</div></div>
+		<div class="tabs">
+			<div class="tab selected-tab" pane="appearance">$appearance</div>
+			<div class="tab" pane="about">$about</div>
+		</div>
+		
+		<div class="pane" id="appearance">
+			<div class="section">
+				<div class="checkbox">$showChatButtons</div>
+				<div class="checkbox">$showUserCount</div>
+				<div class="checkbox">$showNickColors</div>
+			</div>
+			<div class="section">
+				<div class="itext"><span>$theme</span>:</div>
+				<input type="text" id="theme" value="default.css" style="width:150px" readonly>
+				<input type="button" value="$browse">
+			</div>
+			<div class="section">
+				<div class="itext"><span>$time</span>:</div>
+				<input type="text" id="time" value="H:i:s" style="width:150px">
+			</div>
+			<div class="section">
+				<div class="itext"><span>$language</span>:</div>
+				<select>
+					<option>English</option>
+				</select>
+			</div>
+		</div>
+		<div class="pane" id="about" style="background:url('../images/pcrow.png') no-repeat 270px center;background-size:200px;">
+			<div style="font-size:18px;">Burd IRC <span class="version">0.0.0</span></div>
+			<div class="t-area">
+				<div class="t-title">Developer:</div>
+				<div class="t-text">Matt (matt@haxed.net)</div>
+				<div class="clear">&nbsp;</div>
+			</div>
+			<div class="t-area">
+				<div class="t-title">Supporters:</div>
+				<div class="t-text">Mikey<br>Jordan Koch</div>
+				<div class="clear">&nbsp;</div>
+			</div>
+		</div>
+		
+	</body>
+</html>

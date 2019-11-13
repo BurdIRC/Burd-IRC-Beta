@@ -1,0 +1,214 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Burd IRC Beta</title>
+		<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap&subset=latin-ext" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,700&display=swap" rel="stylesheet">
+		<link href="style.css" rel="stylesheet">
+		<link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="icon-16.png">
+		<link rel="icon" type="image/png" sizes="128x128" href="icon-128.png">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="js/main.js"></script>
+		<script src="js/menu.js"></script>
+		<script src="js/click_events.js"></script>
+		<style>
+			
+		</style>
+	</head>
+	<body>
+
+		<div id="app">
+			<div id="audio" style="display:none">
+				
+			</div>
+			<div id="overlay">
+				<div class="obox" id="loader">
+					<img src="images/loader.svg">
+				</div>
+				<div class="obox" id="frame">
+					<iframe id="oiframe" src="about:blank"></iframe>
+				</div>
+				<div class="obox" id="dialog">
+					<div class="obox-content">
+						<div class="dtitle" style="font-size:18px;margin-bottom:5px;">Dialog title</div>
+						<div class="dmessage">Dialog message</div>
+						<div class="dinput"><div class="inputtitle">Test:</div> <input type="text"></div>
+						<div class="dlinks"><a href="input:callback">Dialog title</a></div>
+					</div>
+				</div>
+			</div>
+			<div id="nav-pane">
+				<div class="sizer" for="nav-pane">&nbsp;</div>
+				<div class="nav-items">
+					<div class="server">
+						<div class="console">
+							Freenode
+						</div>
+						<div class="items">
+							<div class="nav-item item-bell">
+								<div class="item-name">#hello</div>
+								<div class="counter">2</div>
+							</div>
+							<div class="nav-item">
+								<div class="item-name">#test</div>
+								<div class="counter">20</div>
+							</div>
+							<div class="nav-item item-selected">
+								<div class="item-name">#test123</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="nav-buttons">
+					<div class="svg-button settings-menu">
+						&nbsp;
+					</div>
+					<div class="svg-button add-menu" onclick="">
+						&nbsp;
+					</div>
+				</div>
+			</div>
+			<div id="content-pane">
+				<div class="channel-window">
+					<div class="topic-bar">
+						<div class="channel-name">
+							#test123
+						</div>
+						<div class="channel-topic">
+							hello this is a topic hello this is a topic
+						</div>	
+						<div class="sizer" for="topic">&nbsp;</div>
+					</div>
+					<div class="users-list">
+						<div class="sizer" for="users-list">&nbsp;</div>
+						<div class="usercount"><b>Users here</b>: 10</div>
+						<div class="users">
+							<div class="user user-idle">
+								<div class="usertext nick1">Hello</div>
+								<div class="usermodes">@+</div>
+							</div>
+							<div class="user">
+								<div class="usertext nick29">Hello2</div>
+								<div class="usermodes">+</div>
+							</div>
+							<div class="user">
+								<div class="usertext nick3">MrNoModes</div>
+								<div class="usermodes"></div>
+							</div>
+						</div>
+					</div>
+					<div class="channel-content">
+						<div class="user-message">
+							<div class="message-date">[16:11:35]</div>
+							<div class="username">
+								&lt;<span class="name nick29">Hello2</span>&gt;
+							</div>
+							<div class="message">test <a href="http://google.com">Animals</a> </div>
+							<div class="clear">&nbsp;</div>
+						</div>
+					</div>
+					<div class="channel-input">
+						<div class="emoji">
+							<!--images/emojibg.png-->
+							<div class="emojis">
+								<div class="emoji-icon">😀</div>
+								<div class="emoji-icon">😁</div>
+								<div class="emoji-icon">😂</div>
+								<div class="emoji-icon">🤣</div>
+								<div class="emoji-icon">😃</div>
+								<div class="emoji-icon">😄</div>
+								<div class="emoji-icon">😅</div>
+								<div class="emoji-icon">😆</div>
+								<div class="emoji-icon">😉</div>
+								<div class="emoji-icon">😊</div>
+								<div class="emoji-icon">😋</div>
+								<div class="emoji-icon">😎</div>
+								<div class="emoji-icon">😍</div>
+								<div class="emoji-icon">😘</div>
+								<div class="emoji-icon">😗</div>
+								<div class="emoji-icon">😙</div>
+								<div class="emoji-icon">😚</div>
+								<div class="emoji-icon">🙂</div>
+								<div class="emoji-icon">🤗</div>
+								<div class="emoji-icon">🤩</div>
+								<div class="emoji-icon">🤔</div>
+								<div class="emoji-icon">🤨</div>
+								<div class="emoji-icon">😐</div>
+								<div class="emoji-icon">😑</div>
+								<div class="emoji-icon">😶</div>
+								<div class="emoji-icon">🙄</div>
+								<div class="emoji-icon">😏</div>
+								<div class="emoji-icon">😣</div>
+								<div class="emoji-icon">😥</div>
+								<div class="emoji-icon">😮</div>
+								<div class="emoji-icon">🤐</div>
+								<div class="emoji-icon">😯</div>
+								<div class="emoji-icon">😪</div>
+								<div class="emoji-icon">😫</div>
+								<div class="emoji-icon">😴</div>
+								<div class="emoji-icon">😌</div>
+								<div class="emoji-icon">😛</div>
+								<div class="emoji-icon">😜</div>
+								<div class="emoji-icon">😝</div>
+								<div class="emoji-icon">🤤</div>
+								<div class="emoji-icon">😒</div>
+								<div class="emoji-icon">😓</div>
+								<div class="emoji-icon">😔</div>
+								<div class="emoji-icon">😕</div>
+								<div class="emoji-icon">🙃</div>
+								<div class="emoji-icon">🤑</div>
+								<div class="emoji-icon">😲</div>
+								<div class="emoji-icon">☹️</div>
+								<div class="emoji-icon">🙁</div>
+								<div class="emoji-icon">😖</div>
+								<div class="emoji-icon">😞</div>
+								<div class="emoji-icon">😟</div>
+								<div class="emoji-icon">😤</div>
+								<div class="emoji-icon">😢</div>
+								<div class="emoji-icon">😭</div>
+								<div class="emoji-icon">😦</div>
+								<div class="emoji-icon">😧</div>
+								<div class="emoji-icon">😨</div>
+								<div class="emoji-icon">😩</div>
+								<div class="emoji-icon">🤯</div>
+								<div class="emoji-icon">😬</div>
+								<div class="emoji-icon">😰</div>
+								<div class="emoji-icon">😱</div>
+								<div class="emoji-icon">😳</div>
+								<div class="emoji-icon">🤪</div>
+								<div class="emoji-icon">😵</div>
+								<div class="emoji-icon">😡</div>
+								<div class="emoji-icon">😠</div>
+								<div class="emoji-icon">🤬</div>
+								<div class="emoji-icon">😷</div>
+								<div class="emoji-icon">🤒</div>
+								<div class="emoji-icon">🤕</div>
+								<div class="emoji-icon">🤢</div>
+								<div class="emoji-icon">🤮</div>
+								<div class="emoji-icon">🤧</div>
+								<div class="emoji-icon">😇</div>
+								<div class="emoji-icon">🤠</div>
+								<div class="emoji-icon">🤫</div>
+								<div class="emoji-icon">🤭</div>
+								<div class="emoji-icon">😈</div>
+							</div>
+								<div style="clear:both;padding-left:10px;">
+									<a href="emoji:smileys">Smileys</a>
+									-
+									<a href="emoji:animals">Animals</a>
+									-
+									<a href="emoji:food">Food</a>
+								</div>
+						</div>
+						<input type="text" class="input-box">
+						<input type="button" class="send-button" value=" ">
+						<input type="button" class="emoji-button" value=" ">
+						<input type="button" class="insert-button" value=" ">
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
