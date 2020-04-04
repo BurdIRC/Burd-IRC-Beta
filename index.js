@@ -94,7 +94,7 @@ function startGUI(){
     if(settings.gui == true){
         setTimeout(function(){
             if(process.platform == "win32"){
-                cp.exec("start chrome --app=http://localhost:" + port + "/index.html");
+                //cp.exec("start chrome --app=http://localhost:" + port + "/index.html");
             }
         },1000);
     }
