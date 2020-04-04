@@ -1,0 +1,257 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Burd IRC Beta</title>
+		<link href="https://fonts.googleapis.com/css?family=Montserrat:300i,400,600,600i,900,900i&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="iframe.js"></script>
+		<link href="../style.css" rel="stylesheet">
+		<style>
+			body,html{
+				 user-select: text;
+			}
+			div.title{
+				background:var(--frame-bg);
+				padding:5px;
+				font-size:17px;
+				font-weight:600;
+				border-bottom:1px solid rgba(0,0,0,0.5);
+			}
+			div.tabs{
+				background:var(--nav-pane-bg);
+				float:left;
+				width:150px;
+				height:369px;
+			}
+			div.tab{
+				padding:2px;
+			}
+			div.selected-tab{
+				background:var(--list-selected-bg);
+				color:var(--list-selected-color);
+			}
+			div.pane{
+				padding:5px;
+				height:357px;
+				float:right;
+				width:440px;
+			}
+			div.warning{
+				font-size:12px;
+				background-image:url('../images/alert.svg?color=ffffff');
+				background-repeat:no-repeat;
+				background-size:25px;
+				background-position:left center;
+				padding:5px;
+				padding-left:30px;
+				margin:10px;
+				background-color:rgba(255,255,255,0.1);
+			}
+			div.section{
+				padding:10px;
+				padding-top:0;
+				padding-bottom:0px;
+			}
+			div.caption{
+				font-size:18px;
+				padding-bottom:2px;
+			}
+			div.acontainer{
+				height:calc(100% - 40px);
+				overflow:hidden;
+				overflow-y:auto;
+			}
+			div.login-info{
+				display:none;
+			}
+			div.problem{
+				float:left;
+				color:#d29a9a;
+			}
+		</style>
+		
+		<script>
+			
+			$(function(){
+				window.parent.postMessage({command: "iframe-size", width: "380px", height: "480px"}, "*");
+				$("div.tab").on("click", function(e){
+					$("div.selected-tab").removeClass("selected-tab");
+					$(this).addClass("selected-tab");
+				});
+				$( "select#login-method" ).change(function(e) {
+					$("div.login-username").show();
+					switch($(this).val()){
+						case "None":
+							$("div.login-info").hide();
+							break;
+						case "NickServ":
+							$("div.login-info").show();
+							break;
+						case "Server password":
+							$("div.login-username").hide();
+							$("div.login-info").show();
+							break;
+						case "SASL Plain":
+							$("div.login-info").show();
+							break;
+					}
+				});
+				
+				$("input#nickname").on("keyup", function(e){
+					$("input#altnickname").val($(this).val() + "_");
+				});
+				
+				$("input#nickname").val("guest" + rand(0,99999));
+				$("input#altnickname").val($("input#nickname").val() + "_");
+				
+				$("input#save").on("click", function(e){
+					createNetwork();
+				});
+			})
+			
+			onArgs = function(e){
+
+			}
+			
+			onCheckbox = function(elem, checked){
+				switch(elem[0].id){
+					case "ssl":
+						$("input#port").val(checked ? "6697" : "6667");
+						break;
+				}
+			}
+			
+			function rand(min, max) {
+				return Math.floor(min + Math.random()*(max + 1 - min))
+			}
+			
+			function createNetwork(){
+				var error = "";
+				if($("input#nickname").val() == "") error = "You must enter a nickname";
+				if($("input#altnickname").val() == "") error = "You must enter an alt nickname";
+				
+
+				if($("input#username").val() == "") error = $("input#username").val("BurdIRC");
+				if($("input#ident").val() == "") $("input#ident").val("BurdIRC");
+				if($("input#netname").val() == "") $("input#netname").val( $("input#server").val() );
+				
+				if(error == ""){
+					var newServer = {
+						name: $("input#netname").val(),
+						nick: $("input#nickname").val(),
+						altnick: $("input#altnickname").val(),
+						username: $("input#username").val(),
+						ident: $("input#ident").val(),
+						server: $("input#server").val(),
+						port: $("input#port").val(),
+						
+						reconnect: $("div#reconnect").hasClass("checked"),
+						startup: $("div#startup").hasClass("checked"),
+						ssl: $("div#ssl").hasClass("checked"),
+						
+						auth: {
+							type: $("#login-method").val(),
+							username: $("input#login").val(),
+							password: $("input#password").val()
+						}
+					}
+					
+					console.log(newServer);
+					window.parent.postMessage({command: "new-server", server: newServer}, "*");
+					//window.parent.postMessage({command: "close-main-iframe"}, "*");
+				}
+				$("div.problem").text(error);
+			}
+			
+			window.addEventListener("message", function(e){
+				switch(e.data.command){
+					case "error":
+						$("div.problem").text(e.data.message);
+						break;
+					case "added":
+						window.location.href="networks.html";
+						break;
+					
+				}
+			}, false);
+		</script>
+	</head>
+	<body>
+		<div class="title"><span>New Network</span> <div class="quit">&nbsp;</div></div>
+		<div class="acontainer">
+			<div class="section" style="margin-top:5px;">
+				<div class="caption">User information</div>
+			</div>
+			
+			<div class="section">
+				<div class="itext"><span>Nickname</span>:</div>
+				<input type="text" id="nickname" value="guest" style="width:200px">
+			</div>
+			
+			<div class="section">
+				<div class="itext"><span>Alt Nickname</span>:</div>
+				<input type="text" id="altnickname" autocomplete="off" value="" style="width:200px">
+			</div>
+			
+			<div class="section">
+				<div class="itext"><span>Username</span>:</div>
+				<input type="text" id="username" autocomplete="off" value="BurdIRC" style="width:200px">
+			</div>
+			
+			<div class="section">
+				<div class="itext"><span>Ident</span>:</div>
+				<input type="text" id="ident" autocomplete="off" value="BurdIRC" style="width:200px">
+			</div>
+
+			<div class="section" style="margin-top:15px;">
+				<div class="caption">Network information</div>
+			</div>
+
+			<div class="section">
+				<div class="itext"><span>Name</span>:</div>
+				<input type="text" id="netname" autocomplete="off" value="Freenode" style="width:200px">
+			</div>
+
+			<div class="section">
+				<div class="itext"><span>Server</span>:</div>
+				<input type="text" id="server" autocomplete="off" value="chat.freenode.net" style="width:126px">
+				<input type="number" id="port" min="0" max="65535" autocomplete="off" value="6667" style="width:60px">
+			</div>
+			
+			<div class="section">
+				<div class="checkbox" id="reconnect">Automatically reconnect</div>
+				<div class="checkbox" id="startup">Connect on app startup</div>
+				<div class="checkbox" id="ssl">Use SSL/TLS</div>
+			</div>
+
+			<div class="section">
+				<div class="itext"><span>Login method</span>:</div>
+				<select id="login-method">
+					<option>None</option>
+					<option>NickServ</option>
+					<option>Server password</option>
+					<option>SASL Plain</option>
+				</select>
+			</div>
+			
+			<div class="login-info">
+				<div class="section login-username">
+					<div class="itext"><span>Username</span>:</div>
+					<input type="text" id="login" autocomplete="off" value="" style="width:200px">
+				</div>
+				<div class="section">
+					<div class="itext"><span>Password</span>:</div>
+					<input type="password" id="password" autocomplete="off" value="" style="width:200px">
+				</div>
+			</div>
+			
+			<div class="section" style="text-align:right">
+				<div class="problem">
+					
+				</div>
+				<input type="button" value="Save" id="save" style="width:60px">
+			</div>
+		</div>
+	</body>
+</html>

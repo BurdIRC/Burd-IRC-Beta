@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Burd IRC Beta</title>
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:300i,400,600,600i,900,900i&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="iframe.js"></script>
+        <link href="../style.css" rel="stylesheet">
+        <style>
+            body,html{
+                 user-select: text;
+                 overflow:hidden;
+            }
+            div.title{
+                background:var(--frame-bg);
+                padding:5px;
+                font-size:17px;
+                font-weight:600;
+                border-bottom:1px solid rgba(0,0,0,0.5);
+            }
+            div.tabs{
+                background:var(--nav-pane-bg);
+                float:left;
+                width:150px;
+                height:369px;
+            }
+            div.tab{
+                padding:2px;
+            }
+            div.selected-tab{
+                background:var(--list-selected-bg);
+                color:var(--list-selected-color);
+            }
+            div.pane{
+                padding:5px;
+                height:357px;
+                float:right;
+                width:440px;
+            }
+            div.warning{
+                font-size:12px;
+                background-image:url('../images/alert.svg?color=ffffff');
+                background-repeat:no-repeat;
+                background-size:25px;
+                background-position:left center;
+                padding:5px;
+                padding-left:30px;
+                margin:10px;
+                background-color:rgba(255,255,255,0.1);
+            }
+            div.section{
+                padding:10px;
+                padding-top:0;
+                padding-bottom:0px;
+            }
+            div.caption{
+                font-size:18px;
+                padding-bottom:2px;
+            }
+            div.acontainer{
+                height:calc(100% - 40px);
+                overflow:hidden;
+                overflow-y:auto;
+            }
+            div.login-info{
+                display:none;
+            }
+            div.list{
+                height:370px;
+                padding-left:5px;
+            }
+            div.seg{
+                float:left;
+                width:100px;
+                color:#adadad;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            div.list div.checkbox{
+                height:17px;
+            }
+        </style>
+        
+        <script>
+            
+            var settings = {};
+            
+            $(function(){
+                window.parent.postMessage({command: "iframe-size", width: "380px", height: "480px"}, "*");
+                window.parent.postMessage({command: "get-settings"}, "*");
+                $("div.tab").on("click", function(e){
+                    $("div.selected-tab").removeClass("selected-tab");
+                    $(this).addClass("selected-tab");
+                });
+                
+                $("input#add").on("click", function(e){
+                    window.location.href = "newnetwork.html";
+                });
+                
+                $("input#delete").on("click", function(e){
+                    $("div.checked").each(function(){
+                        window.parent.postMessage({command: "delete-server", id: $(this).attr("sid")}, "*");
+                        $(this).remove();
+                    });
+                    //window.location.href = "networks.html";
+                });
+                
+                $("input#edit").on("click", function(e){
+                    window.location.href = "editnetwork.html?edit=" + $("div.checked:first").attr("sid");
+                });
+                
+                $("input#connect").on("click", function(e){
+                    $("div.checked").each(function(){
+                        window.parent.postMessage({command: "connect", id: $(this).attr("sid")}, "*");
+                    });
+                    setTimeout(function(){
+                        window.parent.postMessage({command: "close-main-iframe"}, "*");
+                    },100);
+                    //window.location.href = "networks.html";
+                });
+                
+            });
+
+            window.addEventListener("message", function(e){
+                switch(e.data.command){
+                
+                    case "error":
+                        $("div.problem").text(e.data.message);
+                        break;
+                        
+                    case "added":
+                        window.parent.postMessage({command: "close-main-iframe"}, "*");
+                        break;
+                        
+                    case "settings":
+                        settings = e.data.settings;
+                        for(var i in settings.networks){
+                            $("div.list").append('<div class="checkbox" class="network" sid="' + settings.networks[i].id + '"><div class="seg">' + settings.networks[i].name + '</div><div class="seg">' + settings.networks[i].nick + '</div><div class="seg" style="width:130px;">' + settings.networks[i].server + '</div></div>');
+                        }
+                        break;
+                    
+                }
+            }, false);
+        </script>
+    </head>
+    <body>
+        <div class="title"><span>Networks</span> <div class="quit">&nbsp;</div></div>
+        <div class="acontainer">
+            
+            <div class="section">
+                <div class="itext" style="padding-left:15px;">Name</div>
+                <div class="itext">Nick</div>
+                <div class="itext" style="width:130px">Server</div>
+                <div class="clear">&nbsp;</div>
+            </div>
+            
+            <div class="list">
+                <!--
+                <div class="checkbox" class="network">
+                    <div class="seg">Test</div>
+                    <div class="seg">duckgoose</div>
+                    <div class="seg" style="width:130px;">chat.freenode.net</div>
+                </div>
+                -->
+            </div>
+            
+            <div style="text-align:right;margin-top:5px;padding-right:5px;">
+                <input type="button" value="Add" id="add" style="width:75px">
+                <input type="button" value="Delete" id="delete" style="width:75px">
+                <input type="button" value="Edit" id="edit" style="width:75px">
+                <input type="button" value="Connect" id="connect" style="width:75px">
+            </div>
+        </div>
+    </body>
+</html>

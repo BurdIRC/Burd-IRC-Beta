@@ -1,0 +1,11 @@
+{
+  "name": "burdirc",
+  "productName": "burdirc",
+  "version": "0.7.0",
+  "main": "index.js",
+  "description": "A simple IRC client",
+  "dependencies": {
+    "tar-fs": "^2.0.0",
+    "ws": "^7.2.1"
+  }
+}

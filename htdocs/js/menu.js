@@ -21,8 +21,11 @@ var menu = {
 
 		var menuHtml = '<div class="menu-list">';
 		for(var i in e){
+			
 			if(e[i].text == "-"){
 				menuHtml += '<div class="menu-splitter">&nbsp;</div>';
+			}else if(e[i].header != undefined){
+				menuHtml += '<div class="menu-header">' + e[i].header + '</div>';
 			}else{
 				var cID = (Math.random().toString(36)+Math.random().toString(36)).replace(/[^a-z]+/g, '').substr(0, 10);
 				menuHtml += '<div class="menu-item" style="background-image:url(\'' + (e[i].image || "data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==") + '\')" callback="' + cID + '">' + e[i].text + '</div>';
@@ -34,8 +37,11 @@ var menu = {
 		
 		var menuY = (mouse.y - 10);
 		var menuX = (mouse.x - 10);
-		if(($(window).height() + menuY) > $(window).height()){
+		if((menuY + $("div.menu-list").height() + 5) > $(window).height()){
 			menuY = ($(window).height() - $("div.menu-list").height() - 20);
+		}
+		if((menuX + $("div.menu-list").width()) > $(window).width() + 5){
+			menuX = ($(window).width() - $("div.menu-list").width() - 20);
 		}
 		if(menuX < 5){
 			menuX = 5;

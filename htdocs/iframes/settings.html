@@ -5,15 +5,18 @@
 		<link href="https://fonts.googleapis.com/css?family=Montserrat:300i,400,600,600i,900,900i&display=swap" rel="stylesheet">
 		<link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-		
+		<script src="iframe.js"></script>
 		<link href="../style.css" rel="stylesheet">
 		<style>
+			body,html{
+			}
 			div.title{
 				background:var(--frame-bg);
 				padding:5px;
 				font-size:17px;
 				font-weight:600;
 				border-bottom:1px solid rgba(0,0,0,0.5);
+                margin-bottom:5px;
 			}
 			div.tabs{
 				background:var(--nav-pane-bg);
@@ -34,125 +37,165 @@
 				float:right;
 				width:440px;
 			}
-			div.pane{
-				display:none;
-			}
-			div.t-title{
-				float:left;
-				width:100px;
-				font-weight:600;
-			}
-			div.t-text{
-				float:left;
-				width:200px;
-			}
-			div.t-area{
+			div.warning{
+				font-size:12px;
+				background-image:url('../images/alert.svg?color=ffffff');
+				background-repeat:no-repeat;
+				background-size:25px;
+				background-position:left center;
+				padding:5px;
+				padding-left:30px;
 				margin-top:5px;
+				background-color:rgba(255,255,255,0.1);
 			}
+			div.section{
+				padding:8px;
+				padding-top:0;
+			}
+			div.caption{
+				font-size:18px;
+				padding-bottom:5px;
+			}
+			a{
+				color:white;
+			}
+            div.options{
+                height: calc(100% - 40px);
+                overflow-y: scroll;
+            }
+            div.text-input{
+                margin-top:5px;
+            }
+            div.text-input input{
+                width:120px;
+            }
+            div.text-title{
+                float:left;
+                width:120px;
+                padding-top:3px;
+            }
+            div.section-content{
+                padding-left:5px;
+            }
 		</style>
 		
 		<script>
-			var settings = {
-				language: "english.json"
-			};
-			var language = {};
-			
+			var settings = {};
 			$(function(){
-				setTimeout(function(){
-					window.parent.postMessage({command: "show-main-iframe"}, "*");
-				},100);
-				
-				window.parent.postMessage({command: "iframe-size", width: "600px", height: "400px"}, "*");
-				window.parent.postMessage({command: "get-version"}, "*");
-				
+				window.parent.postMessage({command: "iframe-size", width: "400px", height: "500px"}, "*");
+                window.parent.postMessage({command: "get-settings"}, "*");
 				$("div.tab").on("click", function(e){
 					$("div.selected-tab").removeClass("selected-tab");
 					$(this).addClass("selected-tab");
-					$("div.pane").hide();
-					$("div#" + $(this).attr("pane")).show();
 				});
-				
-				$("body").on("click", "div.checkbox", function(e){
-					if($(this).hasClass("checked")){
-						$(this).removeClass("checked");
-					}else{
-						$(this).addClass("checked");
-					}
-				});
-				
-				window.addEventListener("message", function(e){
-					switch(e.data.command){
-						case "version":
-							$("span.version").text(e.data.version);
-							break;
-						case "iframe-args":
-							if(e.data.args.tab){
-								$("div.tab[pane='" + e.data.args.tab + "']").click();
-							}
-							break;
-					}
-				}, false);
-				
-				translate();
-				
 			})
 			
-			function translate(){
-				$.getJSON( "../languages/" + settings.language, function( json ) {
-					$("div,span").each(function(e){
-						var t = $(this).html();
-						if(json[t] != undefined) $(this).text(json[t]);
-					});
-					$("input").each(function(e){
-						var t = $(this).val();
-						if(json[t] != undefined) $(this).val(json[t]);
-					});
-				});
+			onArgs = function(e){
+                
 			}
+            window.addEventListener("message", function(e){
+                switch(e.data.command){
+                    case "settings":
+                        settings = e.data.settings;
+                        comp();
+                        break;
+                }
+            }, false);
+            
+            
+			function comp(){
+				for(var i in settings){
+					if($("div.checkbox[id='" + i + "']").length > 0){
+						if(settings[i]) $("div.checkbox[id='" + i + "']").addClass("checked");
+					}
+					if($("input[id='" + i + "']").length > 0){
+						if(settings[i]) $("input[id='" + i + "']").val(settings[i]);
+					}
+				}
+				for(var i in settings.sounds){
+					
+					if($("div.checkbox[id='sounds_" + i + "']").length > 0){
+						if(settings.sounds[i]) $("div.checkbox[id='sounds_" + i + "']").addClass("checked");
+					}
+				}
+			}
+			
 		</script>
 	</head>
 	<body>
-		<div class="title"><span>$settings</span> <div class="quit">&nbsp;</div></div>
-		<div class="tabs">
-			<div class="tab selected-tab" pane="appearance">$appearance</div>
-			<div class="tab" pane="about">$about</div>
-		</div>
-		
-		<div class="pane" id="appearance">
-			<div class="section">
-				<div class="checkbox">$showChatButtons</div>
-				<div class="checkbox">$showUserCount</div>
-				<div class="checkbox">$showNickColors</div>
-			</div>
-			<div class="section">
-				<div class="itext"><span>$theme</span>:</div>
-				<input type="text" id="theme" value="default.css" style="width:150px" readonly>
-				<input type="button" value="$browse">
-			</div>
-			<div class="section">
-				<div class="itext"><span>$time</span>:</div>
-				<input type="text" id="time" value="H:i:s" style="width:150px">
-			</div>
-			<div class="section">
-				<div class="itext"><span>$language</span>:</div>
-				<select>
-					<option>English</option>
-				</select>
-			</div>
-		</div>
-		<div class="pane" id="about" style="background:url('../images/pcrow.png') no-repeat 270px center;background-size:200px;">
-			<div style="font-size:18px;">Burd IRC <span class="version">0.0.0</span></div>
-			<div class="t-area">
-				<div class="t-title">Developer:</div>
-				<div class="t-text">Matt (matt@haxed.net)</div>
-				<div class="clear">&nbsp;</div>
-			</div>
-			<div class="t-area">
-				<div class="t-title">Supporters:</div>
-				<div class="t-text">Mikey<br>Jordan Koch</div>
-				<div class="clear">&nbsp;</div>
-			</div>
-		</div>
-		
+		<div class="title"><span>Global Settings</span> <div class="quit">&nbsp;</div></div>
+        <div class="options">
+        
+            <div class="section" style="margin-top:5px;">
+               <div class="caption">General</div>
+                <div class="section-content">
+                    <div class="checkbox" id="cmdautocomplete">Show command autocomplete</div>
+                    <div class="text-input">
+                        <div class="text-title">Theme:</div>
+                        <div class="ipb"><input type="text" id="theme" value=""></div>
+                        <div class="clear">&nbsp;</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="caption">Channel Settings</div>
+                <div class="section-content">
+                    <div class="checkbox" id="timestamps">Show timestamps</div>
+                    <div class="text-input">
+                        <div class="text-title">Time string:</div>
+                        <div class="ipb"><input type="text" id="timestring" value="H:i:s"></div>
+                        <div class="clear">&nbsp;</div>
+                    </div>
+                    
+                    <div class="checkbox" id="emojis">Show emoticons</div>
+                    <div class="checkbox" id="nickColors">Allow colored nicknames</div>
+                    <div class="checkbox" id="textColors">Allow mIRC colors</div>
+                    
+                    <div class="text-input">
+                        <div class="text-title">Scrollback:</div>
+                        <div class="ipb"><input type="number" id="scrollback" value="50"></div>
+                        <div class="clear">&nbsp;</div>
+                    </div>
+                    
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="caption">Sounds</div>
+                <div class="section-content">
+                    <div class="checkbox" id="muted">Mute all sounds</div>
+                    <div class="checkbox" id="sounds_highlight">Highlights</div>
+                    <div class="checkbox" id="sounds_newPM">New PMs</div>
+                    <div class="checkbox" id="sounds_notice">Notices</div>
+                    <div class="checkbox" id="sounds_privmsg">Channel messages</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="caption">Operator Options</div>
+                <div class="section-content">
+                    <div class="text-input">
+                        <div class="text-title">Default mask:</div>
+                        <div class="ipb"><input type="text" id="banmask" value="*!%i@%h"></div>
+                        <div class="clear">&nbsp;</div>
+                    </div>
+                    <div class="text-input">
+                        <div class="text-title">Ban reason:</div>
+                        <div class="ipb"><input type="text" style="width:230px;" id="banreason" value="Bye"></div>
+                        <div class="clear">&nbsp;</div>
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="section">
+                <div class="caption">Lists</div>
+                <div class="section-content">
+                    <div><a href="ignorelist.html">Ignore List</a> / <a href="highlights.html">Highlights</a> / <a href="usercommands.html">User Commands</a></div>
+                </div>
+            </div>
+
+        </div>
 	</body>
 </html>

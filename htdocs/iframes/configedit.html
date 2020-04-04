@@ -1,0 +1,137 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Burd IRC Beta</title>
+		<link href="https://fonts.googleapis.com/css?family=Montserrat:300i,400,600,600i,900,900i&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="iframe.js"></script>
+		<link href="../style.css" rel="stylesheet">
+		<style>
+			body,html{
+			}
+			div.title{
+				background:var(--frame-bg);
+				padding:5px;
+				font-size:17px;
+				font-weight:600;
+				border-bottom:1px solid rgba(0,0,0,0.5);
+                margin-bottom:5px;
+			}
+			div.tabs{
+				background:var(--nav-pane-bg);
+				float:left;
+				width:150px;
+				height:369px;
+			}
+			div.tab{
+				padding:2px;
+			}
+			div.selected-tab{
+				background:var(--list-selected-bg);
+				color:var(--list-selected-color);
+			}
+			div.pane{
+				padding:5px;
+				height:357px;
+				float:right;
+				width:440px;
+			}
+			div.warning{
+				font-size:12px;
+				background-image:url('../images/alert.svg?color=ffffff');
+				background-repeat:no-repeat;
+				background-size:25px;
+				background-position:left center;
+				padding:5px;
+				padding-left:30px;
+				margin-top:5px;
+				background-color:rgba(255,255,255,0.1);
+			}
+			div.section{
+				padding:8px;
+				padding-top:0;
+			}
+			div.caption{
+				font-size:18px;
+				padding-bottom:5px;
+			}
+			a{
+				color:white;
+			}
+            div.options{
+                height: calc(100% - 40px);
+                overflow-y: scroll;
+                padding-left:5px;
+            }
+            div.text-input{
+                margin-top:5px;
+            }
+            div.text-input input{
+                width:120px;
+            }
+            div.text-title{
+                float:left;
+                width:120px;
+                padding-top:3px;
+            }
+            div.section-content{
+                padding-left:5px;
+            }
+            div.object{
+                font-size:15px;
+            }
+            div.object div.name{
+                background: url("../images/chevron-down.svg?color=ffffff") no-repeat left 0px;
+                padding-left:20px;
+                background-size:20px;
+                padding-bottom:5px;
+            }
+            div.object div.content{
+                padding-left:30px;
+            }
+
+            div.object input{
+                padding:0;
+                margin:0;
+                border:1px solid transparent;
+                background:transparent;
+                color:#cdcdcf;
+                width:100px;
+            }
+            div.object input:focus,div.object input:hover{
+                border:1px solid #cdcdcf;
+            }
+            div.object div.item{
+                padding-bottom:5px;
+            }
+		</style>
+		
+		<script>
+			
+			$(function(){
+				window.parent.postMessage({command: "iframe-size", width: "400px", height: "500px"}, "*");
+			})
+			
+			onArgs = function(e){
+			}
+			
+		</script>
+	</head>
+	<body>
+		<div class="title"><span>Config Editor</span> <div class="quit">&nbsp;</div></div>
+        <div class="options">
+            <div class="object">
+                <div class="name">settings</div>
+                <div class="content">
+                    <div class="item">
+                        test: <input type="text">
+                    </div>
+                    <div class="item">
+                        testTwo: <input type="text">
+                    </div>
+                </div>
+            </div>
+        </div>
+	</body>
+</html>

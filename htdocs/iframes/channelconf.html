@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Burd IRC Beta</title>
+		<link href="https://fonts.googleapis.com/css?family=Montserrat:300i,400,600,600i,900,900i&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="iframe.js"></script>
+		<link href="../style.css" rel="stylesheet">
+		<style>
+			body,html{
+			}
+			div.title{
+				background:var(--frame-bg);
+				padding:5px;
+				font-size:17px;
+				font-weight:600;
+				border-bottom:1px solid rgba(0,0,0,0.5);
+			}
+			div.tabs{
+				background:var(--nav-pane-bg);
+				float:left;
+				width:150px;
+				height:369px;
+			}
+			div.tab{
+				padding:2px;
+			}
+			div.selected-tab{
+				background:var(--list-selected-bg);
+				color:var(--list-selected-color);
+			}
+			div.pane{
+				padding:5px;
+				height:357px;
+				float:right;
+				width:440px;
+			}
+			div.warning{
+				font-size:12px;
+				background-image:url('../images/alert.svg?color=ffffff');
+				background-repeat:no-repeat;
+				background-size:25px;
+				background-position:left center;
+				padding:5px;
+				padding-left:30px;
+				margin-top:5px;
+				background-color:rgba(255,255,255,0.1);
+			}
+			div.section{
+				padding:8px;
+				padding-top:0;
+			}
+			div.caption{
+				font-size:18px;
+				padding-bottom:2px;
+			}
+			a{
+				color:white;
+			}
+		</style>
+		
+		<script>
+			
+			$(function(){
+				window.parent.postMessage({command: "iframe-size", width: "400px", height: "400px"}, "*");
+				$("div.tab").on("click", function(e){
+					$("div.selected-tab").removeClass("selected-tab");
+					$(this).addClass("selected-tab");
+				});
+			})
+			
+			onArgs = function(e){
+				$("div.title span").text(e.channel);
+				$("div.warning").text($("div.warning").text().replace("%channel", e.channel));
+			}
+			
+		</script>
+	</head>
+	<body>
+		<div class="title"><span>$channelconfig</span> <div class="quit">&nbsp;</div></div>
+		<div class="section" style="margin:0;">
+			<div class="warning">These settings only apply to this channel. You can change global channel settings in the apps settings page</div>
+		</div>
+		<div class="section">
+			<div class="caption">Misc</div>
+			<div class="checkbox">Join this channel on connect</div>
+		</div>
+		<div class="section">
+			<div class="caption">Channel content</div>
+			<div class="checkbox">Show images in channel</div>
+			<div class="checkbox">Show channel notices</div>
+		</div>
+		<div class="section">
+			<div class="caption">Channel events</div>
+			<div class="checkbox">Show join messages</div>
+			<div class="checkbox">Show part messages</div>
+			<div class="checkbox">Show quit messages</div>
+			<div class="checkbox">Enable highlights</div>
+		</div>
+		<div class="section">
+			<div class="caption">Channel lists</div>
+			<div><a href="banlist.html">Ban list</a></div>
+		</div>
+	</body>
+</html>
