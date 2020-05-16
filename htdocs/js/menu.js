@@ -1,8 +1,6 @@
 $(function(){
 	$("body").on("click", "div.menu-item", function(e){
-		$("div.menu-list").fadeOut(100, function(){
-			$(this).remove();
-		});
+		$("div.menu-list").remove();
 		menu.exec($(this).attr("callback"));
 	});
 	$("body").on("mousedown", function(e){
@@ -47,6 +45,7 @@ var menu = {
 			menuX = 5;
 		}
 		$("div.menu-list").css("top", menuY + "px").css("left", menuX + "px");
+        
 	},
 	exec: function(e){
 		for(var i in this.callbacks){
@@ -55,7 +54,5 @@ var menu = {
 				console.log(this.callbacks[i]);
 			}
 		}
-		console.log(e);
-		menu.callbacks = [];
 	}
 }

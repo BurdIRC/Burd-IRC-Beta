@@ -67,6 +67,11 @@ var burd = {
 		};
 		
 	},
+    sendLast: function(e){
+        this.controlServer.send(JSON.stringify(
+            [":" + burd.getServer(burd.lastServer).socket + " " + e]
+        ));
+    },
 	sortUsers: function(channel, svr){
 		if(typeof(channel) == "string") channel = burd.getChannel(svr.id, channel, "channel");
 		var rusers = [];
@@ -414,6 +419,21 @@ var burd = {
 		this.lastServer = id;
 		var channel = this.getChannel(id,chan,type);
 		var uhtml = "";
+        var nitm = $("div.server[sid='" + id + "'] div.nav-item[channel='" + chan.toLowerCase() + "']");
+        
+        if(type == "channel"){
+            if(!nitm.hasClass("item-selected")){
+                nitm.click();
+                return;
+            }
+        }else if(type == "console"){
+            nitm = $("div.server[sid='" + id + "'] div.console");
+            if(!nitm.hasClass("item-selected")){
+                nitm.click();
+                return;
+            }
+        }
+        
 		document.title = title + " - [" + channel.channel + "]";
 		$("div.channel-content,div.channel-window div.users,div.channel-window div.channel-name,div.channel-window div.channel-topic").html("");
 		$("div.channel-window span.unum").text("0");

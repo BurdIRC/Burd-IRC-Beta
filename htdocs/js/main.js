@@ -1,5 +1,7 @@
 var version = "0.7.0";
 var title = "Burd IRC Beta";
+var guiAccess = Date.now(); /* This is set to the last time the GUI was access (Date.now()) */
+var joinTimer = 0;
 var fileInput = {
     content: "",
     type: "",
@@ -49,7 +51,8 @@ var settings = {
         newPM: ["hero_simple-celebration-03.ogg", true],
         notice: ["navigation_hover-tap.ogg", true],
         privmsg: ["navigation_forward-selection-minimal.ogg", true],
-        highlight: ["notification_decorative-02.ogg", true]
+        highlight: ["notification_decorative-02.ogg", true],
+        error: ["alert_error-03.ogg", true]
     },
     usercommands: [
         ["action", "me &2"],
@@ -159,6 +162,7 @@ var sounds = {
     }
 }
 
+/* overlay.show({type: "dialog", title:"TEST", text:"hello", inputs:[], buttons:["Okay"], callback: function(e){}}) */
 var overlay = {
     callback: false,
     args: {tab: "appearance"},
@@ -167,19 +171,21 @@ var overlay = {
             $("div#" + e.type ).fadeIn(100);
         });
         if(e.type == "dialog"){
-            sounds.play("alert");
+            sounds.play("error");
             var dv = $("div#" + e.type + " div.obox-content" );
             dv.html("");
-            dv.append('<div class="dtitle" style="font-size:18px;margin-bottom:5px;">' + e.title + '</div>');
-            dv.append('<div class="dmessage">' + e.text + '</div>');
+            dv.append('<div class="dtitle" style="padding: 10px 10px 0px 10px; font-size: 18px; margin-bottom: 5px;font-weight: bold;">' + e.title + '</div>');
+            dv.append('<div class="dmessage" style="padding: 5px 10px 5px 10px;">' + e.text + '</div>');
             if(e.inputs){
                 for(var i in e.inputs){
-                    dv.append('<div class="dinput"><div class="inputtitle">' + e.inputs[i] + ':</div> <input type="text" name="' + e.inputs[i] + '"></div>');
+                    dv.append('<div class="dinput"><div class="inputtitle" style="padding: 5px 10px 5px 10px;">' + e.inputs[i] + ':</div> <input type="text" name="' + e.inputs[i] + '"></div>');
                 }
             }
             for(var i in e.buttons){
-                dv.append('<div class="dlinks"><a href="input:callback">' + e.buttons[i] + '</a> &nbsp;</div>');
+                dv.append('<div class="dlinks" style="padding: 5px 10px 5px 10px;"><a href="input:callback">' + e.buttons[i] + '</a> &nbsp;</div>');
             }
+        }else if(e.type == "plugins"){
+            $("div#iplugin" ).show();
         }
         this.callback = e.callback;
     },
@@ -191,10 +197,11 @@ var overlay = {
         }else{
             $("iframe#oiframe").attr("src", a);
         }
+        $("iframe#oiframe").show();
     },
     hide: function(){
         $("div#overlay,div.obox").hide();
-        $("iframe#oiframe").attr("src", "about:blank");
+        $("iframe#oiframe").attr("src", "about:blank").hide();
     }
 }
 
@@ -426,10 +433,23 @@ var colors = {
 }
 
 
+var snackbar = {
+    callback: function(e){},
+    show: function(e){
+        this.callback = e.callback;
+        $("div.snack-content").html(e.text);
+        $("div.snack-button").remove();
+        for(var i in e.buttons){
+            $("div#snackbar").prepend('<div class="snack-button">' + e.buttons[i] + '</div>');
+        }
+        $("div#snackbar").show(200);
+    }
+}
+
 function showUserMenu(nick){
     var svr = burd.getServer(burd.lastServer);
     menu.show([
-        {header: nick},
+        {header: removeHtml(nick)},
         {text: "-"},
         {text: "Send a PM", callback: function(){
             var chan = burd.getChannel(svr.id, nick, "pm");
@@ -462,7 +482,39 @@ function showUserMenu(nick){
         }},
         {text: "-"},
         {text: "OP Actions", callback: function(){
-            overlay.iframe("newnetwork.html", {tab: ""});
+            menu.show([
+                {header: removeHtml(nick)},
+                {text: "-"},
+                {text: "OP User", callback: function(){
+                    //console.log(svr.);
+                    //burd.lastChannel.name
+                }},
+                {text: "DEOP User", callback: function(){
+                    
+                }},
+                {text: "VOICE User", callback: function(){
+                    
+                }},
+                {text: "UNVOICE User", callback: function(){
+                    
+                }},
+                {text: "-"},
+                {text: "KICK User", callback: function(){
+                    
+                }},
+                {text: "BAN User", callback: function(){
+                    
+                }},
+                {text: "BAN/KICK User", callback: function(){
+                    var mask = svr.users[nick].mask;
+                    if(mask == ""){
+                       burd.sendLast("MODE " + burd.lastChannel.name + " +b " + nick);
+                    }else{
+                       burd.sendLast("MODE " + burd.lastChannel.name + " +b *!" + mask.split("!")[1]);
+                    }
+                    burd.sendLast("KICK " + burd.lastChannel.name + " " + nick);
+                }}
+            ]);
         }}
     ]);
 }

@@ -1,36 +1,39 @@
-var partMessage = "BurdIRC https://burdirc.com";
+var partMessage = "BurdIRC www.burdirc.com";
 
 
 function parseInput(e,i){
     if(e == "") return;
+    var isCommand = (e[0] == "/");
 	var type = $(".item-selected").attr("type");
 	var channel = $(".item-selected").attr("channel");
 	var svr = burd.getServer(burd.lastServer);
 	var bits = e.split(" ");
-	var isCommand = (e[0] == "/");
+	
 	$("div#ccoms").hide();
     
-    for(var i in settings.usercommands){
-        if(bits[0].substr(1).toLowerCase() == settings.usercommands[i][0].toLowerCase()){
-            console.log("USER COMMAND " + settings.usercommands[i][1]);
-            var rcmd = settings.usercommands[i][1];
-            var i;
-            for (var a = 100; a > 0; a--) {
-                if(rcmd.indexOf("&" + a) > -1){
-                    rcmd = rcmd.replace("&" + a, after(a-2));
+    if(isCommand){
+        for(var i in settings.usercommands){
+            if(bits[0].substr(1).toLowerCase() == settings.usercommands[i][0].toLowerCase()){
+                console.log("USER COMMAND " + settings.usercommands[i][1]);
+                var rcmd = settings.usercommands[i][1];
+                var i;
+                for (var a = 100; a > 0; a--) {
+                    if(rcmd.indexOf("&" + a) > -1){
+                        rcmd = rcmd.replace("&" + a, after(a-2));
+                    }
+                    if(rcmd.indexOf("%" + a) > -1){
+                        rcmd = rcmd.replace("%" + a, bits[a-1]);
+                    }
                 }
-                if(rcmd.indexOf("%" + a) > -1){
-                    rcmd = rcmd.replace("%" + a, bits[a-1]);
-                }
+                var d = new Date();
+                rcmd = rcmd.replace(/\%c/g, channel);
+                rcmd = rcmd.replace(/\%e/g, svr.name);
+                rcmd = rcmd.replace(/\%n/g, svr.nick);
+                rcmd = rcmd.replace(/\%t/g, d.toGMTString());
+                rcmd = rcmd.replace(/\%v/g, version);
+                e =  ("/" + rcmd);
+                bits = e.split(" ");
             }
-            var d = new Date();
-            rcmd = rcmd.replace(/\%c/g, channel);
-            rcmd = rcmd.replace(/\%e/g, svr.name);
-            rcmd = rcmd.replace(/\%n/g, svr.nick);
-            rcmd = rcmd.replace(/\%t/g, d.toGMTString());
-            rcmd = rcmd.replace(/\%v/g, version);
-            e =  ("/" + rcmd);
-            bits = e.split(" ");
         }
     }
     
@@ -142,7 +145,11 @@ function parseInput(e,i){
 						send("MODE " + channel + " +h " + after(0));
 					}
 					break;
-					
+                
+                case "PLUGINS":
+                    overlay.iframe("plugins.html", {tab: "appearance"});
+                    break;
+                
 				case "UNIGNORE":
 					var af = after(0);
 					af = af.replace(/\s?-regex/ig, "");
@@ -187,7 +194,7 @@ function parseInput(e,i){
 					if(isChannel(bits[1])){
 						send("INVITE " + after(1) + " " + bits[1]);
 					}else{
-						send("INVITE " + channel + " " + after(0));
+						send("INVITE " + after(0) + " " + channel);
 					}
 
 					break;
@@ -221,21 +228,40 @@ function parseInput(e,i){
 					break;
 
 				case "MODE":
-					if(bits.length > 2){
-						send("MODE " + bits[1] + " " + after(1));
-					}else{
-						send("MODE " + svr.nick + " " + after(1));
-					}
+                    if(isChannel(bits[1])){
+                        send("MODE " + bits[1] + " " + after(1));
+                    }else{
+                        send("MODE " + channel + " " + after(0));
+                    }
+					break;
+                    
+				case "UMODE":
+                    send("MODE " + svr.nick + " " + after(0));
 					break;
 				
 				case "MSG":
 				case "PRIVMSG":
 				case "PM":
 				case "QUERY":
+                    
 					if(bits.length > 2){
 						send("PRIVMSG " + bits[1] + " :" + after(1));
 					}else{
-						// open pm window
+                        var chan = burd.getChannel(svr.id, bits[1], "pm");
+                        if(!chan){
+                            $("div.server[sid='" + svr.id + "'] div.items").append('<div class="nav-item" channel="'+ removeHtml(bits[1].toLowerCase()) +'" type="pm"><div class="item-name">' + removeHtml(bits[1]) + '</div><div class="counter" num="0">0</div><div class="closer">&nbsp;</div></div>');
+                            svr.channels.push(
+                                {
+                                    channel: bits[1],
+                                    type: "pm",
+                                    topic: "",
+                                    topicSetter: "",
+                                    users: [
+                                    ],
+                                    content: []
+                                }
+                            );
+                        }
 					}
 					break;
 					
@@ -312,7 +338,8 @@ function parseInput(e,i){
 
 				
 					
-				case "TEST":
+				case "SV":
+                    addMessage("BurdIRC " + version + " http://burdirc.com");
 					break;
 				case "JOIN":
 					send("JOIN " + after(0));

@@ -28,6 +28,14 @@
 	<body>
 		
 		<div id="app">
+            <div id="snackbar">
+                <div class="snack-content">
+                    JimLong123 has invited you to join ##longchannelname 
+                </div>
+                <div class="snack-button">JOIN</div>
+                <div class="snack-button">CANCEL</div>
+                <div class="clear">&nbsp;</div>
+            </div>
 			<input type="file" id="file-input">
 			<div id="audio" style="display:none">
 				
@@ -39,11 +47,16 @@
 				<div class="obox" id="frame">
 					<iframe id="oiframe" src="about:blank"></iframe>
 				</div>
+				<div class="obox" id="plugins">
+					<iframe id="iplugin" src="iframes/plugins.html" style="height: 500px; width: 400px; display: block;"></iframe>
+				</div>
 				<div class="obox" id="dialog">
 					<div class="obox-content">
-						<div class="dtitle" style="font-size:18px;margin-bottom:5px;">Dialog title</div>
-						<div class="dmessage">Dialog message</div>
-						<div class="dinput"><div class="inputtitle">Test:</div> <input type="text"></div>
+                        <div style="padding:10px;">
+                            <div class="dtitle" style="font-size:18px;margin-bottom:5px;">Dialog title</div>
+                            <div class="dmessage">Dialog message</div>
+                            <div class="dinput"><div class="inputtitle">Test:</div> <input type="text"></div>
+                        </div>
 						<div class="dlinks"><a href="input:callback">Dialog title</a></div>
 					</div>
 				</div>
@@ -85,35 +98,11 @@
 					<div class="svg-button add-menu" onclick="">
 						&nbsp;
 					</div>
-
-					<div class="svg-button notes" onclick="">
+ 					<div class="svg-button plugins-menu" onclick="">
 						&nbsp;
 					</div>
 				</div>
 			</div>
-            <div id="notes">
-                <div class="ncontent">
-                    <div class="head">Notifications</div>
-                    <div class="note-container">
-                        <div class="note">
-                            <div class="note-title">
-                                blah mentioned you in #channel
-                            </div>
-                            <div class="note-content">
-                                [24:12:01] &lt;blah&gt; Hey how are you have a nice day
-                            </div>
-                        </div>
-                        <div class="note">
-                            <div class="note-title">
-                                blah mentioned you in #channel
-                            </div>
-                            <div class="note-content">
-                                [24:12:01] &lt;blah&gt; Hey how are you have a nice day
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 			<div id="content-pane">
 				
 			

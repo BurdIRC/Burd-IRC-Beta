@@ -67,7 +67,7 @@ const wsServer = {
                                                         if(control.data.slice(-1) == "\n"){
                                                             const parts = control.data.split("\n");
                                                             for(let i in parts){
-                                                                ws.send("a" + JSON.stringify([":" + control.id + " " + parts[i]]));
+                                                               if(parts[i].length > 0) ws.send("a" + JSON.stringify([":" + control.id + " " + parts[i]]));
                                                             }
                                                             control.data = "";
                                                         }

@@ -1,17 +1,19 @@
-var log_data = false;
+var logData = false;
 
 var rateLimit = 0;
 
 function parseData(e){
-	if(log_data) console.log(e);
+	
 	if(e.substr(0,1) == "o"){
 		console.log("connected to websocket");
 	}else if(e.substr(0,1) == "a"){
 		//json data
 		var jsonData = JSON.parse(e.substr(1));
-		
+        
 		for(var i in jsonData){
-			
+            
+			if(logData && jsonData[i].indexOf(" 352 ") == -1) console.log(e);
+            
 			var socketID = jsonData[i].split(" ")[0].substr(1);
 			var data = jsonData[i].substr(3);
 			var bits = data.split(" ");
@@ -176,6 +178,23 @@ function parseData(e){
                     }
                     if(svr.users[nick.toLowerCase()] != undefined) svr.users[nick.toLowerCase()].mask = nick + "!" + bits[4] + "@" + bits[5];
                     break;
+                    
+                case E.ERR_CHANOPRIVSNEEDED:
+                case E.ERR_USERONCHANNEL:
+                case E.ERR_NEEDMOREPARAMS:
+                    burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "error",  time: Date.now(), message: "<b>" + getEnum(ubits[1]) + "</b> " + removeHtml(bits[3]) + ": " + removeHtml(cData)},true);
+                    break;
+                   
+                case E.ERR_CHANNELISFULL:   
+                case E.ERR_NOTONCHANNEL:
+                case E.ERR_BANNEDFROMCHAN:
+                case E.ERR_CANNOTSENDTOCHAN:
+                case E.ERR_NOSUCHNICK:
+                    burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "error",  time: Date.now(), message: "<b>" + getEnum(ubits[1]) + "</b> " + removeHtml(bits[3]) + ": " + removeHtml(cData)},true);
+                    
+                    //overlay.show({type: "dialog", title:"CHANNEL FULL", text: removeHtml(bits[3]) + " is full and can not accept any more users. Try again later.", inputs:[], buttons:["Okay"], callback: function(e){}});
+                    
+                    break;
 					
 				/* -------------------------------------------- */	
 				
@@ -236,6 +255,7 @@ function parseData(e){
 				case "KICK":
 					var usr = parseUser(bits[0]);
 					var kicked = bits[3];
+                    iplugin.contentWindow.postMessage({command: "event", event: "onKick", network: svr.name, sID: svr.id, channel: bits[2], user: usr, kicked: kicked, message: cData},"*");
 					burd.addChannelMessage(svr.id, bits[2], "channel", {type: "info",  time: Date.now(), message: "<b>" + removeHtml(usr.nick) + "</b> has kicked <b>" + removeHtml(kicked) + "</b> (" + removeHtml(cData) + ")"},true);
 					burd.removeChannelUser(svr, bits[2], kicked);
 					burd.checkForRemoval(svr, kicked);
@@ -253,6 +273,7 @@ function parseData(e){
 				
 				case "PART":
 					var usr = parseUser(bits[0]);
+                    iplugin.contentWindow.postMessage({command: "event", event: "onPart", network: svr.name, sID: svr.id, channel: bits[2], user: usr, message: cData},"*");
 					var nickInfo = getUserPrefixes(usr.nick, svr);
 					if(nickInfo.nick.toLowerCase() == svr.nick.toLowerCase()){
 						//we left the channel
@@ -260,7 +281,7 @@ function parseData(e){
 						burd.addChannelMessage(svr.id, bits[2], "channel", {type: "error",  time: Date.now(), message: "You're no longer in this channel"},true);
 					}else{
 						//someone other than us left the channel
-						burd.addChannelMessage(svr.id, bits[2], "channel", {type: "out",  time: Date.now(), message: "<b>" + removeHtml(usr.nick) + "</b> (" + removeHtml(usr.mask) + ") has left"},true);
+						burd.addChannelMessage(svr.id, bits[2], "channel", {type: "out",  time: Date.now(), message: "<b>" + removeHtml(usr.nick) + "</b> (" + removeHtml(usr.mask) + ") has left (" + removeHtml(cData) + ")"},true);
 						burd.removeChannelUser(svr, bits[2], usr.nick);
 						burd.checkForRemoval(svr, usr.nick);
 					}
@@ -273,6 +294,9 @@ function parseData(e){
 				case "PRIVMSG":
 					if(ignore.test(data)) return console.log("ignored");
 					var usr = parseUser(bits[0]);
+                    
+                    iplugin.contentWindow.postMessage({command: "event", event: "onPrivMsg", network: svr.name, sID: svr.id, channel: bits[2], user: usr, message: cData},"*");
+                    
                     if(svr.users[usr.nick.toLowerCase()] != undefined) svr.users[usr.nick.toLowerCase()].mask = usr.mask;
 					if(isChannel(bits[2])){
 						if(cData.substr(0,1) == String.fromCharCode(1)){
@@ -312,6 +336,7 @@ function parseData(e){
 					
 				case "QUIT":
 					var usr = parseUser(bits[0]);
+                    iplugin.contentWindow.postMessage({command: "event", event: "onQuit", network: svr.name, sID: svr.id, user: usr, message: cData},"*");
 					burd.quitUser(svr, usr, cData);
 					break;
                     
@@ -330,9 +355,18 @@ function parseData(e){
                     chan.topic = cData;
                     if(burd.lastChannel.name == $("div.item-selected .item-name").text()) $("div.item-selected").click();
                     break;
-
+                case "INVITE":
+                    //a[":1 :Matt_6!~Matt@137.118.221.173 INVITE duckgoose :#freenudes"]
+                    var usr = parseUser(bits[0]);
+                    snackbar.show({text: removeHtml(usr.nick) + " has invited you to join " + removeHtml(cData), buttons: ["DECLINE", "ACCEPT"], callback: function(e){
+                        if(e == "ACCEPT"){
+                            send("JOIN " + cData);
+                        }
+                    }})
+                    break;
 				case "JOIN":
 					var usr = parseUser(bits[0]);
+                    iplugin.contentWindow.postMessage({command: "event", event: "onJoin", network: svr.name, sID: svr.id, channel: cData, user: usr},"*");
                     if(svr.users[usr.nick.toLowerCase()] != undefined) svr.users[usr.nick.toLowerCase()].mask = usr.mask;
 					if($("div.server[sid='" + svr.id + "'] div.items div.nav-item[channel='" + removeHtml(cData.toLowerCase()) + "']").length > 0){
 						burd.addChannelMessage(svr.id, cData, "channel", {type: "in",  time: Date.now(), message: "<b>" + removeHtml(usr.nick) + "</b> (" + removeHtml(usr.mask) + ") has joined"},true);
@@ -359,6 +393,12 @@ function parseData(e){
 							);
                             if(svr.whoPollList.includes(cData.toLowerCase())) svr.whoPollList.splice(svr.whoPollList.indexOf(cData.toLowerCase()), 1);
                             svr.whoPollList.unshift(cData.toLowerCase());
+                            if(settings.focusonjoin){
+                                clearTimeout(joinTimer);
+                                joinTimer = setTimeout(function(){
+                                    burd.showChannel(svr.id, cData, "channel");
+                                }, 500);
+                            }
 						}
 					}
 					

@@ -63,5 +63,14 @@ window.addEventListener("message", function(e){
             burd.connectServer(si.id);
             console.log(si);
             break;
+            
+        case "add-message":
+            console.log(e);
+            if(e.data.channel == "*"){
+                e.data.channel = burd.lastChannel.name;
+                e.data.server = burd.lastServer;
+            }
+            burd.addChannelMessage(e.data.server, e.data.channel, "channel", {type: "info",  time: Date.now(), message: removeHtml(e.data.message)}, true);
+            break;
     }
 }, false);

@@ -1,0 +1,179 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Plugins</title>
+		<link href="https://fonts.googleapis.com/css?family=Montserrat:300i,400,600,600i,900,900i&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+		<script src="iframe.js"></script>
+		<link href="../style.css" rel="stylesheet">
+		<style>
+			body,html{
+			}
+			div.title{
+				background:var(--frame-bg);
+				padding:5px;
+				font-size:17px;
+				font-weight:600;
+				border-bottom:1px solid rgba(0,0,0,0.5);
+                margin-bottom:5px;
+			}
+			div.pane{
+				padding:5px;
+				height:357px;
+				float:right;
+				width:440px;
+			}
+			div.warning{
+				font-size:12px;
+				background-image:url('../images/alert.svg?color=ffffff');
+				background-repeat:no-repeat;
+				background-size:25px;
+				background-position:left center;
+				padding:5px;
+				padding-left:30px;
+				margin-top:5px;
+				background-color:rgba(255,255,255,0.1);
+			}
+			div.section{
+				padding:8px;
+				padding-top:0;
+			}
+			div.caption{
+				font-size:18px;
+				padding-bottom:5px;
+			}
+			a{
+				color:white;
+			}
+            div.options{
+                height: calc(100% - 40px);
+                overflow-y: scroll;
+            }
+            div.text-input{
+                margin-top:5px;
+            }
+            div.text-input input{
+                width:120px;
+            }
+            div.text-title{
+                float:left;
+                width:120px;
+                padding-top:3px;
+            }
+            div.section-content{
+                padding-left:5px;
+            }
+			div.seg {
+				float: left;
+				width: 80px;
+				color: #adadad;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			div.itext{
+				width:80px;
+			}
+            div.tabs{
+                height:50px;
+                padding:2px;
+            }
+            div.tab{
+                padding:10px;
+                float:left;
+                
+            }
+            div.selected-tab{
+                border-bottom:1px solid white;
+            }
+            div.plist{
+                height: 420px;
+                overflow-x:scroll;
+            }
+            div.plugin{
+                padding:5px;
+                margin:5px;
+                border:1px solid #6d737e;
+                height:18px;
+            }
+            div.prem{
+                float:right;
+                text-decoration: underline;
+                color: #95aec7;
+            }
+            div.prem:hover{
+                color:red;
+                cursor:pointer;
+            }
+            div.ptext{
+                float:left;
+            }
+		</style>
+		
+		<script>
+            var server = function(sid){
+                return {
+                    addMessage: function(channel, message){
+                        /* *=current channel */
+                        window.parent.postMessage({command: "add-message", server: sid, channel: channel, message: message}, "*");
+                    }
+                }
+            }
+            var plugins = [
+                {
+                    id: "ffac0e529fed45a08bfa943d4c053c5b",
+                    name: "My Test Plugin",
+                    version: "1.0.0",
+                    enabled: true,
+                    onPrivMsg: function(e){
+                        if(e.message == "test") server(e.sID).addMessage("*", "someone said test");
+                    },
+                    onPart: function(e){
+                    },
+                    onQuit: function(e){
+                    },
+                    onJoin: function(e){
+                    },
+                    onKick: function(e){
+                    }
+                    
+                    
+                }
+            ];
+        
+			$(function(){
+                setTimeout(function(){
+                    for(var i in plugins){
+                        $("div.plist").append('<div class="plugin" sid=' + plugins[i].id + '><div class="ptext">' + plugins[i].name + '</div><div class="prem">remove</div></div>');
+                    }
+                },1000);
+			})
+			
+			onArgs = function(e){
+
+			}
+            
+            function runFunc(f,e){
+                for(var i in plugins){
+                    if(plugins[i].enabled && plugins[i][f] != undefined) plugins[i][f](e);
+                }
+            }
+
+            window.addEventListener("message", function(e){
+                switch(e.data.command){
+                    case "event":
+                        runFunc(e.data.event,e.data);
+                        break;
+                }
+            }, false);
+			
+		</script>
+	</head>
+	<body>
+		<div class="title"><span>Plugins</span> <div class="quit">&nbsp;</div></div>
+        <div class="plist">
+
+        </div>
+	</body>
+</html>

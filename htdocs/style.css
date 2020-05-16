@@ -27,13 +27,17 @@
 	
 	--counter-bg:rgb(77, 82, 98);
 
-	--overlay-bg:rgba(0,0,0,0.5) url('images/carbonio.png');
+	--overlay-bg:rgba(0,0,0,0.7);
 	
 	--frame-bg: #353945;
     
     --highlight-bg: rgba(255,255,255,0.2);
     
     --action-color: #d3baf3;
+    
+    
+    --snackbar-background: #6a6d76;
+    --snackbar-color: #d3d5dc;
 }
 ::-webkit-scrollbar {
   width: 10px;
@@ -143,7 +147,7 @@ div#nav-pane div.nav-buttons{
 	height:calc(30px);
 }
 div#nav-pane div.sizer{
-background: rgba(0, 0, 0, 0.25) url(images/dots-vertical.svg?color=525253) no-repeat center center;
+background: rgba(0, 0, 0, 0.25) url(images/dots-vertical.svg?color=ffffff) no-repeat center center;
     background-size: 15px;
     float: right;
     width: 4px;
@@ -210,7 +214,7 @@ div#nav-pane div.counter{
 div#nav-pane div.closer{
 	float:right;
 	font-size:0.8em;
-	background:url("images/close.svg") no-repeat center center;
+	background:url("images/dots-vertical.svg") no-repeat center center;
 	background-size:15px;
 	width:20px;
 	text-align:center;
@@ -244,6 +248,9 @@ div.svg-button{
 div.settings-menu{
 	background-image:url('images/settings.svg?color=ffffff');
 }
+div.plugins-menu{
+	background-image:url('images/power-plug.svg?color=ffffff');
+}
 div.notes{
     display:none;
 	background-image:url('images/bell-ring.svg?color=ffffff');
@@ -254,6 +261,9 @@ div.settings-menu:hover{
 }
 div.add-menu:hover{
 	background-image:url('images/plus.svg?color=6491E7');
+}
+div.plugins-menu:hover{
+	background-image:url('images/power-plug.svg?color=6491E7');
 }
 div.notes:hover{
 	background-image:url('images/bell-ring.svg?color=6491E7');
@@ -283,7 +293,7 @@ div.topic-bar div.channel-name{
 	align-items: center;
 }
 div.topic-bar div.sizer{
-    background:rgba(0, 0, 0, 0.25) url('images/dots-horizontal.svg?color=525253') no-repeat center center;
+    background:rgba(0, 0, 0, 0.25) url('images/dots-horizontal.svg?color=ffffff') no-repeat center center;
     background-size: 15px;
     width: 100%;
     height:4px;
@@ -310,7 +320,7 @@ div.channel-window div.users-list{
 }
 
 div.users-list div.sizer{
-    background:rgba(0, 0, 0, 0.25) url('images/dots-vertical.svg?color=525253') no-repeat center center;
+    background:rgba(0, 0, 0, 0.25) url('images/dots-vertical.svg?color=ffffff') no-repeat center center;
     background-size: 15px;
     float: left;
     width: 3px;
@@ -537,7 +547,7 @@ div#dialog{
 	height:auto;
 }
 div.obox-content{
-	padding:10px;
+	
 }
 div.dmessage{
 	font-size:15px;margin-bottom:5px;padding-top:10px;padding-bottom:10px;
@@ -563,16 +573,22 @@ div.obox a{
 div.obox a:hover{
 	color:red;
 }
-iframe#oiframe{
+iframe#oiframe, iframe#iplugin{
 	padding:0;
 	margin:0;
 	border:0;
 	height:100%;
 	width:100%;
+    display:none;
 }
-div#frame{
+
+div#frame,div#plugins{
 	height:300px;
 	width:400px;
+}
+div#plugins{
+    height: 500px;
+    width: 400px;
 }
 
 div.no-buttons input[type='button']{
@@ -746,17 +762,38 @@ div#notes div.ncontent{
     padding: 10px;
     height: calc(100% - 45px);
 }
-div#notes{
+div#snackbar{
     position: absolute;
-    height: 387px;
-    width: 376px;
-    background: url(images/notebubble.png) no-repeat center center;
+    padding:10px;
+    background: var(--snackbar-background);
     z-index: 1;
-    left: 180px;
-    top: calc(100% - 420px);
-    color:black;
+    left: 20px;
+    top: calc(100% - 75px);
+    color:var(--snackbar-color);
+    border-radius:5px;
+    border: 1px solid #848896;
+    box-shadow: 3px 3px 3px 1px rgba(0, 0, 0, 0.4);
     display:none;
 }
+div.snack-button{
+    color:#dbbcff;
+    text-decoration:none;
+    font-weight:bold;
+    float:right;
+    padding-left:10px;
+}
+
+div.snack-button:hover{
+    color:white;
+    cursor:pointer;
+}
+div.snack-content{
+    float:left;
+}
+div.snack-buttons{
+    float:right;
+}
+
 div#notes div.head{
     font-size:23px;
     color:#4a4a4a;

@@ -3,6 +3,7 @@
 $(function(){
 	$("body").on("mousedown", function(e){
 		var t = $(e.target);
+        guiAccess = Date.now();
 		if(!t.parents().hasClass("emoji")) $("div.emoji").hide();
 	});
 	$("input.emoji-button").on("click", function(e){
@@ -21,7 +22,7 @@ $(function(){
 	});
 		
 	$("div.config-button").on("click", function(e){
-		 overlay.iframe("channelconf.html", {channel: "#test123"});
+		 overlay.iframe("channelconf.html", {channel: burd.lastChannel.name});
 	});		
 	
 	$("div.media-options").on("click", function(e){
@@ -65,6 +66,9 @@ $(function(){
 		*/
 		overlay.iframe("networks.html", {tab: ""});
 	});
+	$("div.plugins-menu").on("click", function(e){
+		overlay.show({type: "plugins"});
+	});
 	
 	$("div.users").on("click", "div.user", function(e){
 		showUserMenu($(this).attr("nick"));
@@ -78,10 +82,15 @@ $(function(){
 		$("input.input-box").val($("input.input-box").val() + $(this).text());
 		//$("div.emoji").fadeIn(100);
 	});	
+		
+	$("body").on("click", "div.snack-button", function(e){
+		$("div#snackbar").hide(100);
+        snackbar.callback($(this).text());
+	});	
 	
 	$("div.nav-items").on("click", "div.console", function(e){
 		if($(e.target).hasClass("closer")){
-			alert()
+			
 		}else{
 			$("div.item-selected").removeClass("item-selected");
 			$(this).addClass("item-selected");
@@ -97,7 +106,37 @@ $(function(){
 	$("body").on("click", "div.nav-item", function(e){
 		var sid = $(this).parent().parent().attr("sid");
 		var svr = burd.getServer(sid);
+        var channel = $(this).attr("channel");
+        var type = $(this).attr("TYPE");
+        
 		if($(e.target).hasClass("closer")){
+			var p = $(this).prev();
+			var t = $(this);
+            menu.show([
+                {header: removeHtml(channel)},
+                {text: "-"},
+                {text: "Close", callback: function(){
+                    burd.controlServer.send(JSON.stringify(
+                        [":" + svr.socket + " PART " + channel + " :BurdIRC www.burdirc.com"]
+                    ));
+                    if(p.hasClass("nav-item")){
+                        p.click();
+                    }else{
+                        t.parent().parent().find("div.console").click();
+                    }
+                    burd.removeChannel(svr, channel, type);
+                }},
+                {text: "Rejoin", callback: function(){
+                    burd.controlServer.send(JSON.stringify(
+                        [":" + svr.socket + " PART " + channel]
+                    ));
+                    burd.controlServer.send(JSON.stringify(
+                        [":" + svr.socket + " JOIN " + channel]
+                    ));
+                }}
+            ]);
+            
+            /*
 			if($(this).attr("type") == "channel") burd.controlServer.send(JSON.stringify(
 				[":" + svr.socket + " PART " + $(this).attr("channel")]
 			));
@@ -109,15 +148,16 @@ $(function(){
 				t.parent().parent().find("div.console").click();
 			}
 			burd.removeChannel(svr, $(this).attr("channel"), $(this).attr("type"));
+            */
 		}else{	
 			$("div.item-selected").removeClass("item-selected");
 			$(this).addClass("item-selected");
 			$("div.channel-window").removeClass("console");
 			$("div.channel-window").hide();
-			burd.showChannel(sid,$(this).attr("channel"),$(this).attr("type"));
 			$("div.channel-window").show();
 			$(this).find("div.counter").text("0").attr("num", "0");
 			$(this).removeClass("item-bell");
+            burd.showChannel(sid,$(this).attr("channel"),$(this).attr("type"));
 		}
 		$("input.input-box").focus();
 	});
