@@ -5,7 +5,7 @@ const httpServer = require("./httpserver.js");
 const wsServer = require("./websocketserver.js");
 const pjson = require('./package.json');
 const cp = require('child_process');
-const tar = require('tar-fs');
+const unzipper = require('unzipper');
 
 const settings = {
     serverPort: 2083,
@@ -50,19 +50,27 @@ function createHttpServer(){
 
 console.log("Checking for updates...");
 
-function getUpdate(url){
-    const file = fs.createWriteStream("update.tar");
+function getUpdate(url, restart){
+    const file = fs.createWriteStream("update.zip");
     const request = https.get('https://www.burdirc.com/update/' + url, function(response) {
         response.pipe(file);
     });
     console.log("Extracting update file...");
     setTimeout(function(){
-        fs.createReadStream('update.tar').pipe(tar.extract('./'));
-        console.log("update complete");
-        setTimeout(function(){
-            createHttpServer();
-            startGUI();
-        },2000);
+        fs.createReadStream('update.zip').pipe(unzipper.Extract({ path: './' }));
+        fs.unlinkSync("update.zip");
+        if(restart){
+            console.log("BurdIRC has been updated to the latest version but requires a restart. Please restart the app.");
+            setTimeout(function(){
+                process.exit(1);
+            }, 5000);
+        }else{
+            setTimeout(function(){
+                console.log("update complete");
+                createHttpServer();
+                startGUI();
+            },5000);
+        }
     },2000);
 }
 
@@ -83,7 +91,7 @@ const upd = https.get('https://www.burdirc.com/update/check.php', (resp) => {
             if(json.version > pjson.version){
                 //update
                 console.log("Downloading update " + json.version + "...");
-                getUpdate(json.tarball);
+                getUpdate(json.file, json.restart);
             }else{
                 console.log("no updates found");
                 createHttpServer();
