@@ -110,6 +110,7 @@ function parseData(e){
 					}
 					burd.sortUsers(c, svr);
 					svr.cache = [];
+                    $("div.items div.item-selected").click();
 					break;
 					
 					
@@ -303,6 +304,7 @@ function parseData(e){
 							// it's a CTCP message
 							parseCTCP();
 						}else{
+                            sounds.play("privmsg");
 							burd.addChannelMessage(svr.id, bits[2], "channel", {type: "message", time: Date.now(), from: usr.mask, message: colors.parse(linkify(removeHtml(cData))), highlight: checkHighlight()},true);
 						}
 						burd.showInlineMedia(svr.id, bits[2], "channel", cData);

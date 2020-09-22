@@ -90,7 +90,19 @@ $(function(){
 	
 	$("div.nav-items").on("click", "div.console", function(e){
 		if($(e.target).hasClass("closer")){
-			
+            var sid = $(this).parent().attr("sid");
+            var svr = burd.getServer(sid);
+			var t = $(this);
+            menu.show([
+                {header: removeHtml(t.find("span").text())},
+                {text: "-"},
+                {text: "Quit", callback: function(){
+                    burd.controlServer.send(JSON.stringify(
+                        [":" + svr.socket + " QUIT :BurdIRC www.burdirc.com"]
+                    ));
+                    burd.removeServer(svr);
+                }}
+            ]);
 		}else{
 			$("div.item-selected").removeClass("item-selected");
 			$(this).addClass("item-selected");
@@ -135,20 +147,6 @@ $(function(){
                     ));
                 }}
             ]);
-            
-            /*
-			if($(this).attr("type") == "channel") burd.controlServer.send(JSON.stringify(
-				[":" + svr.socket + " PART " + $(this).attr("channel")]
-			));
-			var p = $(this).prev();
-			var t = $(this);
-			if(p.hasClass("nav-item")){
-				p.click();
-			}else{
-				t.parent().parent().find("div.console").click();
-			}
-			burd.removeChannel(svr, $(this).attr("channel"), $(this).attr("type"));
-            */
 		}else{	
 			$("div.item-selected").removeClass("item-selected");
 			$(this).addClass("item-selected");
@@ -181,7 +179,7 @@ $(function(){
 			case "http":
 			case "https":
 			case "ftp":
-				window.open($(this).attr("href"), "target=_blank");
+				window.open($(this).attr("href"));
 				break;
 			case "input":
 				var ip = $("div.obox:visible input");

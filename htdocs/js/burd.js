@@ -134,7 +134,6 @@ var burd = {
 		this.socketCount += 1;
 		var s = this.getServerInfo(id);
 		$("div#nav-pane div.nav-items").append('<div class="server" sid="' + s.id + '"><div class="console" channel="console" type="console"><span>' + s.name +'</span><div class="counter" num="0">0</div><div class="closer">&nbsp;</div></div><div class="items"></div></div>');
-		
 		this.servers.push({
 			id: id,
 			name: s.name,
@@ -158,6 +157,8 @@ var burd = {
 		});
 		
 		this.controlServer.send('[":' + this.socketCount + '"]');
+        
+        $("div.server[sid='" + s.id + "'] div.console").click();
 		
 	},
 	getServerBySocket: function(id){
@@ -184,6 +185,16 @@ var burd = {
 			$("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + formatAttr(chan.toLowerCase()) + "']").remove();
 			svr.channels.splice(svr.channels.indexOf(channel),1);
 		}
+	},
+	removeServer: function(svr){
+		$("div.server[sid='" + svr.id + "']").remove();
+		for(var i in this.servers){
+			if(this.servers[i].id == svr.id){
+                delete this.servers[i];
+                return true;
+            }
+		}
+        return false;
 	},
 	getChannel: function(id,chan,type){
 		for(var i in this.servers){

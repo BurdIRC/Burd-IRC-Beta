@@ -43,6 +43,15 @@ window.addEventListener("message", function(e){
             settings[e.data.setting] = e.data.value;
             break;
             
+        case "replace-settings":
+            settings = e.data.settings;
+            if(settings.timestamps){
+                $("style#nots").remove();
+            }else{
+                $("head").append('<style id="nots">div.channel-content div.message-date{ display:none; }</style>');
+            }
+            break;
+            
         case "get-server":
            
             for(var i in settings.networks){

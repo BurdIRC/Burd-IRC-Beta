@@ -50,7 +50,7 @@ var settings = {
         alert: ["state-change_confirm-down.ogg", true],
         newPM: ["hero_simple-celebration-03.ogg", true],
         notice: ["navigation_hover-tap.ogg", true],
-        privmsg: ["navigation_forward-selection-minimal.ogg", true],
+        privmsg: ["navigation_forward-selection-minimal.ogg", false],
         highlight: ["notification_decorative-02.ogg", true],
         error: ["alert_error-03.ogg", true]
     },

@@ -139,7 +139,8 @@ div#app div#nav-pane{
 div#nav-pane div.nav-items{
 	width:calc(100% - 6px);
 	height:calc(100% - 35px);
-	overflow-x: auto;
+	overflow-y: auto;
+    overflow-x: hidden;
 }
 div#nav-pane div.nav-buttons{
 	padding:5px;

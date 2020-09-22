@@ -1,4 +1,3 @@
-const WebSocket = require('ws');
 const fs = require('fs');
 const http = require('http');
 const https = require('https');
@@ -10,7 +9,8 @@ const tar = require('tar-fs');
 
 const settings = {
     serverPort: 2083,
-    gui: true
+    appWindow: false,
+    browser: "chrome"
 }
 
 process.argv.forEach(function (val, index, array) {
@@ -23,6 +23,8 @@ process.argv.forEach(function (val, index, array) {
         settings[sarg[0]] = true;
     }
 });
+
+if(settings.browser == "edge") settings.browser = "msedge";
 
 const port = settings.serverPort;
 
@@ -49,7 +51,19 @@ function createHttpServer(){
 console.log("Checking for updates...");
 
 function getUpdate(url){
-	
+    const file = fs.createWriteStream("update.tar");
+    const request = https.get('https://www.burdirc.com/update/' + url, function(response) {
+        response.pipe(file);
+    });
+    console.log("Extracting update file...");
+    setTimeout(function(){
+        fs.createReadStream('update.tar').pipe(tar.extract('./'));
+        console.log("update complete");
+        setTimeout(function(){
+            createHttpServer();
+            startGUI();
+        },2000);
+    },2000);
 }
 
 const upd = https.get('https://www.burdirc.com/update/check.php', (resp) => {
@@ -69,7 +83,7 @@ const upd = https.get('https://www.burdirc.com/update/check.php', (resp) => {
             if(json.version > pjson.version){
                 //update
                 console.log("Downloading update " + json.version + "...");
-                getUpdate();
+                getUpdate(json.tarball);
             }else{
                 console.log("no updates found");
                 createHttpServer();
@@ -91,11 +105,15 @@ upd.on('error', (err) => {
 });
 
 function startGUI(){
-    if(settings.gui == true){
+    const start = (process.platform == 'darwin' ? 'open': process.platform == 'win32' ? 'start': 'xdg-open');
+    if(settings.appWindow == true){
         setTimeout(function(){
             if(process.platform == "win32"){
-                cp.exec("start chrome --app=http://localhost:" + port + "/index.html");
+                cp.exec(start + " " + settings.browser + " --app=http://localhost:" + port + "/index.html");
             }
         },1000);
+    }else{
+        /* if settings.appWindow is not true then we open a now browser page */
+        cp.exec(start + " " + "http://localhost:" + port + "/open.html");
     }
 }

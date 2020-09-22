@@ -88,6 +88,27 @@
 					$("div.selected-tab").removeClass("selected-tab");
 					$(this).addClass("selected-tab");
 				});
+				$("div.checkbox").on("click", function(e){
+                    if(settings[$(this)[0].id] != undefined){
+                        if($(this).hasClass("checked")){
+                            settings[$(this)[0].id] = false;
+                        }else{
+                            settings[$(this)[0].id] = true;
+                        }
+                    }else if(settings.sounds[$(this)[0].id.replace("sounds_","")] != undefined){
+                        if($(this).hasClass("checked")){
+                            settings.sounds[$(this)[0].id.replace("sounds_","")][1] = false;
+                        }else{
+                            settings.sounds[$(this)[0].id.replace("sounds_","")][1] = true;
+                        }
+                    }
+                    
+                    console.log($(this)[0].id);
+				});
+                window.addEventListener('beforeunload', function (e) {
+                    console.log("unloaded");
+                    window.parent.postMessage({command: "replace-settings", settings: settings}, "*");
+                });
 			})
 			
 			onArgs = function(e){
@@ -115,7 +136,7 @@
 				for(var i in settings.sounds){
 					
 					if($("div.checkbox[id='sounds_" + i + "']").length > 0){
-						if(settings.sounds[i]) $("div.checkbox[id='sounds_" + i + "']").addClass("checked");
+						if(settings.sounds[i][1]) $("div.checkbox[id='sounds_" + i + "']").addClass("checked");
 					}
 				}
 			}
@@ -168,7 +189,7 @@
                     <div class="checkbox" id="sounds_highlight">Highlights</div>
                     <div class="checkbox" id="sounds_newPM">New PMs</div>
                     <div class="checkbox" id="sounds_notice">Notices</div>
-                    <div class="checkbox" id="sounds_privmsg">Channel messages</div>
+                    <div class="checkbox" id="sounds_privmsg">Privmsg</div>
                 </div>
             </div>
             
@@ -192,7 +213,7 @@
             <div class="section">
                 <div class="caption">Lists</div>
                 <div class="section-content">
-                    <div><a href="ignorelist.html">Ignore List</a> / <a href="highlights.html">Highlights</a> / <a href="usercommands.html">User Commands</a> / <a href="plugins.html">Plugins</a></div>
+                    <div><a href="ignorelist.html">Ignore List</a> / <a href="highlights.html">Highlights</a> / <a href="usercommands.html">User Commands</a></div>
                 </div>
             </div>
 

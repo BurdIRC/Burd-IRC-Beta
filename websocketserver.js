@@ -3,6 +3,8 @@ const net = require('net');
 const tls = require('tls');
 const controls = [];
 
+let doClose = false;
+
 function getControl(ws,id){
 	for(let i in controls){
 		if(controls[i].ws == ws && controls[i].id == id) return controls[i];
@@ -15,6 +17,7 @@ const wsServer = {
 	handle: (request, socket, head) => {
 		wsServer.wss.handleUpgrade(request, socket, head, function connection(ws) {
 			console.log("New websocket connection");
+            doClose = false;
 			ws.on('message', function incoming(message) {
                 try{
                     const j = JSON.parse(message);
@@ -107,12 +110,14 @@ const wsServer = {
 					}
 				}
                 
-                /*
-                setTimeout(function(){
-                    process.exit();
-                },1000);
+                doClose = true;
                 
-                */
+                
+                setTimeout(function(){
+                    if(doClose) process.exit();
+                },2000);
+                
+                
 			});
 			
 			/*

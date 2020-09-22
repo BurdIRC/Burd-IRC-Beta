@@ -4,8 +4,11 @@
   "version": "0.7.0",
   "main": "index.js",
   "description": "A simple IRC client",
+  "scripts": {
+    "start": "node ./index.js"
+  },
   "dependencies": {
-    "tar-fs": "^2.0.0",
-    "ws": "^7.2.3"
+    "tar-fs": "^2.1.0",
+    "ws": "^7.3.1"
   }
 }

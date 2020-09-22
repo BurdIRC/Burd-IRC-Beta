@@ -1,0 +1,1 @@
+START /MIN node ./index.js appWindow=true
