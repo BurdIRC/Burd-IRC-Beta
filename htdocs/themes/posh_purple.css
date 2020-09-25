@@ -1,5 +1,5 @@
 :root {
-    --main-bg: linear-gradient(175deg, rgba(74,98,171,1) 0%, rgba(48,60,102,1) 47%, rgba(38,47,78,1) 100%);
+    --main-bg: linear-gradient(175deg, rgba(74, 98, 171, 1) 0%, rgba(48, 60, 102, 1) 47%, rgba(38, 47, 78, 1) 100%);
     --nav-pane-bg: #232C48;
     --topic-bar-bg: #232C48;
     --users-list-bg: #232C48;
@@ -19,7 +19,6 @@ div.users-list div.user-idle {
     background-image: url(../images/idle.svg?color=8792B6);
 }
 
-
 ::-webkit-scrollbar-track {
     background: #0a1945;
     border: 0px none #ffffff;
@@ -30,4 +29,12 @@ div.users-list div.user-idle {
     background: #455b9e;
     border: 0px none #d760c5;
     border-radius: 0px;
+}
+
+body {
+    /*
+        Use the following font-family declaration to set the desired
+        font for the theme.
+    */
+    font-family: inherit;
 }

@@ -247,6 +247,12 @@ $(function(){
     
 });
 
+function sendData(network, data){
+    burd.controlServer.send(JSON.stringify(
+        [":" + burd.getServer(network).socket + " " + data]
+    ));
+}
+
 function readSingleFile(e) {
     var file = e.target.files[0];
     if(file.size > 5e+6){

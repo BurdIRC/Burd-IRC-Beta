@@ -3,56 +3,7 @@ var burd = {
 	lastServer: "24533d5aa0",
 	lastChannel: {type: "console", name: "console"},
 	lastSocket: "0",
-	servers: [/*
-		{
-			id: "24533d5aa7",
-			name: "Freenode",
-			nick: "duckgoose",
-			socket: "2",
-			cache: [],
-			prefixes: ["@","+"],
-			iSupport: ["CHANTYPES=#", "CHANLIMIT=#:120", "PREFIX=(ov)@+"],
-			channels: [
-				{
-					channel: "#freenode",
-					type: "channel",
-					topic: "Hello world",
-					users: [
-						["Apples", "@+"],
-						["Bananas", ""],
-						["Oranges", ""]
-					],
-					content: [
-						{type: "message", time: 1577762879226, from: "Bananas!mtt@matttt.com", message: "hello world this is a test", highlight: false},
-						{type: "left",  time: 1577762889226, message: "test123 (test123!123!@1233.com) has left"},
-						{type: "joined",  time: 1577762880226, message: "test123 (test123!123!@1233.com) has joined"},
-						{type: "info",  time: 1577762809226, message: "You have been banned from this channel"}
-					]
-				},
-				{
-					channel: "console",
-					type: "console",
-					content: [
-						
-					]
-				},
-,
-				{
-					channel: "test123",
-					type: "pm",
-					mask: "test123!test@google.com",
-					content: [
-						{type: "message", time: 1577762879226, from: "Bananas!mtt@matttt.com", message: "hello world this is a test"}
-					]
-				}
-			],
-			users: [
-				{nick: "Apples", color: "rgb(142,211,102)", away: "not here", notes: "this guy likes apples"},
-				{nick: "Bananas", color: "rgb(189,151,226)", away: false, notes: ""},
-				{nick: "Oranges", color: "rgb(167,238,214)", away: false, notes: ""}
-			]
-		}
-	*/],
+	servers: [],
 	controlServer: false,
 	connectToControl: function(){
 		this.controlServer = new WebSocket("ws://" + window.location.host + "/ws");
@@ -61,6 +12,11 @@ var burd = {
 		};
 		this.controlServer.onopen = function(e){
 			burd.controlServer.send('[":0 CONTROL START"]');
+            for(var i in settings.networks){
+                if(settings.networks[i].startup){
+                    burd.connectServer(settings.networks[i].id);
+                }
+            }
 		};
 		this.controlServer.onclose = function(e){
 			$("div#app").hide();
