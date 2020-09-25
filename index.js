@@ -118,6 +118,8 @@ function startGUI(){
         setTimeout(function(){
             if(process.platform == "win32"){
                 cp.exec(start + " " + settings.browser + " --app=http://localhost:" + port + "/index.html");
+            }else if(process.platform == "linux"){
+                cp.exec(settings.browser + " --app=http://localhost:" + port + "/index.html &");
             }
         },1000);
     }else{

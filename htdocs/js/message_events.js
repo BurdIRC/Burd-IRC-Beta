@@ -1,3 +1,4 @@
+let banWindow = false;
 window.addEventListener("message", function(e){
     console.log(e.data);
     switch(e.data.command){
@@ -35,6 +36,10 @@ window.addEventListener("message", function(e){
                 }
             }
             break;
+        case "get-bans":
+            banWindow = e.source;
+            sendData(e.data.network, "MODE " + e.data.channel + " +b");
+            break;
         case "get-settings":
             e.source.postMessage({command: "settings", settings: settings}, "*");
             break;
@@ -53,11 +58,15 @@ window.addEventListener("message", function(e){
             break;
             
         case "get-server":
-           
             for(var i in settings.networks){
                 if(settings.networks[i].id == e.data.server)  e.source.postMessage({command: "server", server: settings.networks[i]}, "*");
             }
             break;
+            
+        case "last-channel":
+            e.source.postMessage({command: "last-channel", channel: burd.lastChannel, network: burd.lastServer}, "*");
+            break;
+            
         case "edit-server":
             for(var i in settings.networks){
                 if(settings.networks[i].id == e.data.server.id){
