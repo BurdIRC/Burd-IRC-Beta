@@ -179,6 +179,17 @@ function parseData(e){
                     }
                     if(svr.users[nick.toLowerCase()] != undefined) svr.users[nick.toLowerCase()].mask = nick + "!" + bits[4] + "@" + bits[5];
                     break;
+                
+                case E.RPL_BANLIST:
+                    if(banWindow != false){
+                        banWindow.postMessage({command: "ban-list", data: data}, "*");
+                    }
+                    break;
+                
+                case E.RPL_ENDOFBANLIST:
+                    banWindow.postMessage({command: "end-ban-list"}, "*");
+                    banWindow = false;
+                    break;
                     
                 case E.ERR_CHANOPRIVSNEEDED:
                 case E.ERR_USERONCHANNEL:
