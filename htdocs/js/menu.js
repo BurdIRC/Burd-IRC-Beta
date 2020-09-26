@@ -49,7 +49,7 @@ var menu = {
 	},
 	exec: function(e){
 		for(var i in this.callbacks){
-			if(this.callbacks[i].id == e){
+			if(this.callbacks[i] != undefined && this.callbacks[i].id == e){
 				this.callbacks[i].callback(this.callbacks[i].info);
 				console.log(this.callbacks[i]);
 			}

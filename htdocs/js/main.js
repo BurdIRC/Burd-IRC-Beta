@@ -480,11 +480,44 @@ function showUserMenu(nick){
             ));
         }},
         {text: "Ignore", callback: function(){
-            overlay.iframe("newnetwork.html", {tab: ""});
+            var mask = svr.users[nick].mask;
+            if(mask == ""){
+                //burd.sendLast("MODE " + burd.lastChannel.name + " +b " + nick);
+                if(ignore.addString(nick+"!*@*")){
+                    burd.addChannelMessage(burd.lastServer, burd.lastChannel.name, burd.lastChannel.type, {type: "info",  time: Date.now(), message: removeHtml("Added " + nick + "!*@* to ignore list")},true);
+                }else{
+                    burd.addChannelMessage(burd.lastServer, burd.lastChannel.name, burd.lastChannel.type, {type: "info",  time: Date.now(), message: removeHtml("User already ignored")},true);
+                }
+            }else{
+                if(ignore.addString("*!" + mask.split("!")[1])){
+                    burd.addChannelMessage(burd.lastServer, burd.lastChannel.name, burd.lastChannel.type, {type: "info",  time: Date.now(), message: removeHtml("Added *!" + mask.split("!")[1] + " to ignore list")},true);
+                }else{
+                    burd.addChannelMessage(burd.lastServer, burd.lastChannel.name, burd.lastChannel.type, {type: "info",  time: Date.now(), message: removeHtml("User already ignored")},true);
+                }
+            }
         }},
         {text: "-"},
         {text: "CTCP", callback: function(){
-            overlay.iframe("newnetwork.html", {tab: ""});
+            var one = String.fromCharCode(1);
+            menu.show([
+                {header: removeHtml(nick)},
+                {text: "-"},
+                {text: "Ping", callback: function(){
+                    burd.sendLast("PRIVMSG " + nick + " :" + one + "PING " + parseInt(Date.now()/1000) + one);
+                }},
+                {text: "Time", callback: function(){
+                    burd.sendLast("PRIVMSG " + nick + " :" + one + "TIME" + one);
+                }},
+                {text: "Version", callback: function(){
+                    burd.sendLast("PRIVMSG " + nick + " :" + one + "VERSION" + one);
+                }},
+                {text: "Client Info", callback: function(){
+                    burd.sendLast("PRIVMSG " + nick + " :" + one + "CLIENTINFO" + one);
+                }},
+                {text: "User Info", callback: function(){
+                    burd.sendLast("PRIVMSG " + nick + " :" + one + "USERINFO" + one);
+                }}
+            ]);
         }},
         {text: "-"},
         {text: "OP Actions", callback: function(){
@@ -492,24 +525,28 @@ function showUserMenu(nick){
                 {header: removeHtml(nick)},
                 {text: "-"},
                 {text: "OP User", callback: function(){
-                    //console.log(svr.);
-                    //burd.lastChannel.name
+                    burd.sendLast("MODE " + burd.lastChannel.name + " +o " + nick);
                 }},
                 {text: "DEOP User", callback: function(){
-                    
+                    burd.sendLast("MODE " + burd.lastChannel.name + " -o " + nick);
                 }},
                 {text: "VOICE User", callback: function(){
-                    
+                    burd.sendLast("MODE " + burd.lastChannel.name + " +v " + nick);
                 }},
                 {text: "UNVOICE User", callback: function(){
-                    
+                    burd.sendLast("MODE " + burd.lastChannel.name + " -v " + nick);
                 }},
                 {text: "-"},
                 {text: "KICK User", callback: function(){
-                    
+                    burd.sendLast("KICK " + burd.lastChannel.name + " " + nick);
                 }},
                 {text: "BAN User", callback: function(){
-                    
+                    var mask = svr.users[nick].mask;
+                    if(mask == ""){
+                       burd.sendLast("MODE " + burd.lastChannel.name + " +b " + nick);
+                    }else{
+                       burd.sendLast("MODE " + burd.lastChannel.name + " +b *!" + mask.split("!")[1]);
+                    }
                 }},
                 {text: "BAN/KICK User", callback: function(){
                     var mask = svr.users[nick].mask;
