@@ -13,7 +13,7 @@ var fileInput = {
         model.append('file', $('#file-input')[0].files[0]);
 
         $.ajax({
-            url: 'https://i.burdirc.com/?upload=true',
+            url: 'https://burdirc.haxed.net/media',
             type: 'POST',
             dataType: 'json',
             data: model,
@@ -82,8 +82,25 @@ var settings = {
         ["ni","msg nickserv identify &2"]
     ],
     networks:[
-
+    
     ]
+};
+
+var channelSettings = {
+    "default": {
+        "default": {
+            joinOnConnect: false,
+            requestOps: false,
+            requestVoice: false,
+            inlineMedia: false,
+            richText: true,
+            notices: true,
+            joinMessages: true,
+            partMessages: true,
+            quitMessages: true,
+            highlights: true
+        }
+    }
 };
 
 if(localStorage.settings == undefined){
@@ -94,6 +111,10 @@ if(localStorage.settings == undefined){
     for(var i in ts){
 		settings[i] = ts[i];
 	}
+}
+
+if(localStorage.channelSettings != undefined){
+    channelSettings = localStorage.channelSettings;
 }
 
 function processSettings(){
@@ -238,6 +259,7 @@ $(function(){
     document.getElementById('file-input').addEventListener('change', readSingleFile, false);
     window.addEventListener("beforeunload", function(event) {
         localStorage.settings = JSON.stringify(settings);
+        localStorage.channelSettings = JSON.stringify(channelSettings);
         burd.controlServer.send('["CLOSED"]');
     });
     
@@ -560,6 +582,12 @@ function showUserMenu(nick){
             ]);
         }}
     ]);
+}
+
+function getChannelSettings(network, channel){
+    if(channelSettings[network] == undefined) return channelSettings["default"]["default"];
+    if(channelSettings[network][channel] == undefined) return channelSettings["default"]["default"];
+    return channelSettings[network][channel];
 }
 
 function linkify(e) {

@@ -43,7 +43,14 @@ window.addEventListener("message", function(e){
         case "get-settings":
             e.source.postMessage({command: "settings", settings: settings}, "*");
             break;
-            
+        case "get-channel-settings":
+            if(channelSettings[e.data.network] != undefined && channelSettings[e.data.network][e.data.channel] != undefined){
+                e.source.postMessage({command: "channel-settings", settings: channelSettings[e.data.network][e.data.channel]}, "*");
+            }
+            break;
+        case "set-channel-settings":
+            channelSettings[e.data.network][e.data.channel] = e.data.settings;
+            break;
         case "set-setting":
             settings[e.data.setting] = e.data.value;
             break;

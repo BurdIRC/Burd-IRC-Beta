@@ -61,9 +61,11 @@
 		</style>
 		
 		<script>
-			
+			var channel = "";
+            var server = "";
+            var settings = {};
 			$(function(){
-				window.parent.postMessage({command: "iframe-size", width: "400px", height: "400px"}, "*");
+				window.parent.postMessage({command: "iframe-size", width: "400px", height: "430px"}, "*");
 				$("div.tab").on("click", function(e){
 					$("div.selected-tab").removeClass("selected-tab");
 					$(this).addClass("selected-tab");
@@ -73,30 +75,61 @@
 			onArgs = function(e){
 				$("div.title span").text(e.channel);
 				$("div.warning").text($("div.warning").text().replace("%channel", e.channel));
+                window.parent.postMessage({command: "last-channel"}, "*");
 			}
+            
+            onCheckbox = function(elem, state){
+                settings[elem[0].id] = state;
+                console.log(state);
+            }
+            
+            window.addEventListener("message", function(e){
+                console.log(e.data);
+                switch(e.data.command){
+                    case "last-channel":
+                        channel = e.data.channel.name;
+                        server = e.data.network;
+                        window.parent.postMessage({command: "get-channel-settings", channel: channel, network: server}, "*");
+                        break;
+                    case "channel-settings":
+                        settings = e.data.settings;
+                        apply();
+                        break;
+                }
+            });
+            
+            window.addEventListener("beforeunload", function(event) {
+                window.parent.postMessage({command: "set-channel-settings", channel: channel, network: server, settings: settings}, "*");
+            });
 			
+            function apply(){
+                for(var i in settings){
+                    if(settings[i]) $("div#" + i).addClass("checked");
+                }
+            }
+            
 		</script>
 	</head>
 	<body>
-		<div class="title"><span>$channelconfig</span> <div class="quit">&nbsp;</div></div>
-		<div class="section" style="margin:0;">
-			<div class="warning">These settings only apply to this channel. You can change global channel settings in the apps settings page</div>
-		</div>
+		<div class="title"><span>$channelconfig</span> - Settings <div class="quit">&nbsp;</div></div>
+        <div>&nbsp;</div>
 		<div class="section">
 			<div class="caption">Misc</div>
-			<div class="checkbox">Join this channel on connect</div>
+			<div class="checkbox" id="joinOnConnect">Join on connect</div>
+            <div class="checkbox" id="requestOps">Request ops on join</div>
+            <div class="checkbox" id="requestVoice">Request voice on join</div>
 		</div>
 		<div class="section">
 			<div class="caption">Channel content</div>
-			<div class="checkbox">Show images in channel</div>
-			<div class="checkbox">Show channel notices</div>
+			<div class="checkbox" id="inlineMedia">Show images in channel</div>
+			<div class="checkbox" id="notices">Show channel notices</div>
 		</div>
 		<div class="section">
 			<div class="caption">Channel events</div>
-			<div class="checkbox">Show join messages</div>
-			<div class="checkbox">Show part messages</div>
-			<div class="checkbox">Show quit messages</div>
-			<div class="checkbox">Enable highlights</div>
+			<div class="checkbox" id="joinMessages">Show join messages</div>
+			<div class="checkbox" id="partMessages">Show part messages</div>
+			<div class="checkbox" id="quitMessages">Show quit messages</div>
+			<div class="checkbox" id="highlights">Enable highlights</div>
 		</div>
 		<div class="section">
 			<div class="caption">Channel lists</div>

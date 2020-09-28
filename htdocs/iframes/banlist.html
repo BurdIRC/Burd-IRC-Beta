@@ -130,8 +130,8 @@
 		</style>
 		
 		<script>
-			let channel = "";
-            let server = "";
+			var channel = "";
+            var server = "";
 			$(function(){
 				window.parent.postMessage({command: "iframe-size", width: "400px", height: "500px"}, "*");
                 
@@ -166,7 +166,7 @@
 		</script>
 	</head>
 	<body>
-		<div class="title"><span>$channelconfig</span> <div class="quit">&nbsp;</div></div>
+		<div class="title"><span>$channelconfig</span> - Ban List <div class="quit">&nbsp;</div></div>
         <div class="options">
 			<div class="section">
                 <div class="itext" style="padding-left:23px;width:139px">Hostmask</div>

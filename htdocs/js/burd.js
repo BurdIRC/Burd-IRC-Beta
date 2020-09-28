@@ -292,6 +292,7 @@ var burd = {
 	},
 	
 	showInlineMedia: function(id, channel, type, message){
+        if(getChannelSettings(id, channel.toLowerCase()).inlineMedia == false) return;
 		var isActive = false;
 		if(this.lastServer == id && this.lastChannel.type == type && this.lastChannel.name.toLowerCase() == channel.toLowerCase()) isActive = true;
 		if(isActive){
@@ -325,6 +326,9 @@ var burd = {
 	addChannelUser: function(svr, channel, nick){
         
 		var channel = this.getChannel(svr.id,channel,"channel");
+        for(var i in channel.users){
+            if(channel.users[i][0].toLowerCase() == nick.toLowerCase()) return;
+        }
 		channel.users.push([nick, ""]);
 		burd.sortUsers(channel, svr);
 		burd.updateChannelUsers(svr, channel.channel);
@@ -337,7 +341,7 @@ var burd = {
 			for(var a in svr.channels[i].users){
 				if(svr.channels[i].users[a][0].toLowerCase() == usr.nick.toLowerCase()){
 					svr.channels[i].users.splice(a,1);
-					this.addChannelMessage(svr.id, svr.channels[i].channel, "channel", {type: "out",  time: Date.now(), message: "<b>" + removeHtml(usr.nick) + "</b> (" + removeHtml(usr.mask) + ") has quit (" + removeHtml(reason) + ")"},true);
+					if(getChannelSettings(svr.id, svr.channels[i].channel.toLowerCase()).quitMessages) this.addChannelMessage(svr.id, svr.channels[i].channel, "channel", {type: "out",  time: Date.now(), message: "<b>" + removeHtml(usr.nick) + "</b> (" + removeHtml(usr.mask) + ") has quit (" + removeHtml(reason) + ")"},true);
 					fchans.push(svr.channels[i].channel.toLowerCase());
 					burd.updateChannelUsers(svr, svr.channels[i]);
 					break;

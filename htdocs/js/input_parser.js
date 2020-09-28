@@ -75,7 +75,7 @@ function parseInput(e,i){
 					send("PRIVMSG " + bits[1] + " :" + String.fromCharCode(1) + after(1) + String.fromCharCode(1));
 					break;
                 case "DOC":
-                    overlay.iframe("http://burdirc.com/iframe/" + encodeURIComponent(after(0)) + ".html", {tab: ""});
+                    overlay.iframe("https://burdirc.haxed.net/iframe/" + encodeURIComponent(after(0)) + ".html", {tab: ""});
                     break;
                 case "CONFIG":
                     overlay.iframe("configedit.html", {tab: ""});
