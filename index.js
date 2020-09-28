@@ -52,7 +52,7 @@ console.log("Checking for updates...");
 
 function getUpdate(url, restart){
     const file = fs.createWriteStream("update.zip");
-    const request = https.get('https://www.burdirc.com/update/' + url, function(response) {
+    const request = https.get('https://burdirc.haxed.net/update/' + url, function(response) {
         response.pipe(file);
     });
     console.log("Extracting update file...");
@@ -74,7 +74,7 @@ function getUpdate(url, restart){
     },2000);
 }
 
-const upd = https.get('https://www.burdirc.com/update/check.php', (resp) => {
+const upd = https.get('https://burdirc.haxed.net/update/check.php', (resp) => {
 	let data = '';
 
 	resp.on('data', (chunk) => {

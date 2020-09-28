@@ -114,7 +114,7 @@ if(localStorage.settings == undefined){
 }
 
 if(localStorage.channelSettings != undefined){
-    channelSettings = localStorage.channelSettings;
+    channelSettings = JSON.parse(localStorage.channelSettings);
 }
 
 function processSettings(){
