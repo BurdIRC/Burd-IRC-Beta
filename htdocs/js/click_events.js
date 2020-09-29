@@ -108,6 +108,7 @@ $(function(){
 			$(this).addClass("item-selected");
 			var sid = $(this).parent().attr("sid");
 			$("div.channel-window").hide();
+            
 			burd.showChannel(sid,$(this).attr("channel"),$(this).attr("type"));
 			$("div.channel-window").show();
 			$(this).find("div.counter").text("0").attr("num", "0");
@@ -147,7 +148,7 @@ $(function(){
                     ));
                 }}
             ]);
-		}else{	
+		}else{
 			$("div.item-selected").removeClass("item-selected");
 			$(this).addClass("item-selected");
 			$("div.channel-window").removeClass("console");

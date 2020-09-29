@@ -262,7 +262,7 @@ function parseData(e){
 						burd.addChannelMessage(svr.id, "console", "console", {type: "in",  time: Date.now(), message: removeHtml(cData)},true);
 					}else{
 						var usr = parseUser(bits[0]);
-                        if(getChannelSettings[svr.id][bits[2].toLowerCase()].notices == false && bits[2].substr(0,1) == "#") return;
+                        if(getChannelSettings(svr.id,bits[2].toLowerCase()).notices == false && bits[2].substr(0,1) == "#") return;
 						if(burd.lastServer == svr.id){
 							if(bits[2].toLowerCase() == svr.nick.toLowerCase()) bits[2] = "you";
 							burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "info",  time: Date.now(), message: "<b>" + removeHtml(usr.nick) + "</b> sent a notice to <b>" + removeHtml(bits[2]) + "</b>: " + colors.parse(linkify(removeHtml(cData)))},true);
@@ -391,8 +391,8 @@ function parseData(e){
 					var usr = parseUser(bits[0]);
                     iplugin.contentWindow.postMessage({command: "event", event: "onJoin", network: svr.name, sID: svr.id, channel: cData, user: usr},"*");
                     if(svr.users[usr.nick.toLowerCase()] != undefined) svr.users[usr.nick.toLowerCase()].mask = usr.mask;
-					if($("div.server[sid='" + svr.id + "'] div.items div.nav-item[channel='" + removeHtml(cData.toLowerCase()) + "']").length > 0){
-
+					if($("div.server[sid='" + svr.id + "'] div.items div.nav-item[channel='" + formatSel(cData.toLowerCase()) + "']").length > 0){
+                    
 						if(getChannelSettings(svr.id, cData.toLowerCase()).joinMessages) burd.addChannelMessage(svr.id, cData, "channel", {type: "in",  time: Date.now(), message: "<b>" + removeHtml(usr.nick) + "</b> (" + removeHtml(usr.mask) + ") has joined"},true);
                         
                         if(usr.nick.toLowerCase() == svr.nick.toLowerCase()){
@@ -428,8 +428,7 @@ function parseData(e){
                             if(getChannelSettings(svr.id, cData.toLowerCase()).requestOps) send("CHANSERV OP " + cData);
                             if(getChannelSettings(svr.id, cData.toLowerCase()).requestVoice) send("CHANSERV VOICE " + cData);
                             
-							$("div.server[sid='" + svr.id + "'] div.items").append('<div class="nav-item" channel="'+ removeHtml(cData.toLowerCase()) +'" type="channel"><div class="item-name">' + removeHtml(cData) + '</div><div class="counter" num="0">0</div><div class="closer">&nbsp;</div></div>');
-                            
+							$("div.server[sid='" + svr.id + "'] div.items").append('<div class="nav-item" channel="'+ formatAttr(cData.toLowerCase()) +'" type="channel"><div class="item-name">' + removeHtml(cData) + '</div><div class="counter" num="0">0</div><div class="closer">&nbsp;</div></div>');
 							svr.channels.push(
 								{
 									channel: cData,
@@ -522,7 +521,7 @@ function parseData(e){
                     }
                 }
 				burd.sortUsers(channel, svr);
-                $("div.server[sid='" + svr.id + "'] div.item-selected[channel='" + formatAttr(channel.channel.toLowerCase()) + "']").click();
+                $("div.server[sid='" + svr.id + "'] div.item-selected[channel='" + formatSel(channel.channel.toLowerCase()) + "']").click();
 			}
 			
 			
@@ -557,10 +556,10 @@ function parseData(e){
 					if(settings.highlights[i] == "%n" && cData.toLowerCase().indexOf(svr.nick.toLowerCase()) > -1) rRes = true;
 				}
 				if(rRes){
-					var itm = $("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + bits[2].toLowerCase() + "']");
+					var itm = $("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + formatSel(bits[2].toLowerCase()) + "']");
 					if(itm){
 						sounds.play("alert");
-						if(!itm.hasClass("item-selected")) $("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + bits[2].toLowerCase() + "']").addClass("item-bell");
+						if(!itm.hasClass("item-selected")) $("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + formatSel(bits[2].toLowerCase()) + "']").addClass("item-bell");
 					}
 				}
 				return rRes;

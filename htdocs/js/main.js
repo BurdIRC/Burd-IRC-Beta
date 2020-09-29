@@ -608,9 +608,15 @@ function linkify(e) {
 }
 
 function formatAttr(e){
-    e = e.replace(/\'/g, "&rdquo;");
-    e = e.replace(/\"/g, '&rsquo;');
+    //e = e.replace(/\'/g, "&rdquo;");
+    e = e.replace(/\"/g, '&quot;');
     e = e.replace(/\\/g, "&bsol;");
+    return e;
+}
+function formatSel(e){
+    //e = e.replace(/\'/g, "&rdquo;");
+    e = e.replace(/\\/g, "\\\\");
+    e = e.replace(/\"/g, '\\"');
     return e;
 }
 

@@ -138,7 +138,7 @@ var burd = {
 	removeChannel: function(svr, chan, type){
 		var channel = this.getChannel(svr.id,chan,type);
 		if(channel){
-			$("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + formatAttr(chan.toLowerCase()) + "']").remove();
+			$("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + formatSel(chan.toLowerCase()) + "']").remove();
 			svr.channels.splice(svr.channels.indexOf(channel),1);
 		}
 	},
@@ -265,15 +265,15 @@ var burd = {
 						$("div.server[sid='" + id + "'] div.console div.counter").attr("num", 0).text(0);
 						
 					}else{
-						$("div.server[sid='" + id + "'] div.nav-item[channel='" + chan.toLowerCase() + "'] div.counter").attr("num", 0).text(0);
+						$("div.server[sid='" + id + "'] div.nav-item[channel='" + formatSel(chan.toLowerCase()) + "'] div.counter").attr("num", 0).text(0);
 					}
 				}else{
 					if(type=="console"){
 						var num = parseInt($("div.server[sid='" + id + "'] div.console div.counter").attr("num"));
 						$("div.server[sid='" + id + "'] div.console div.counter").attr("num", num + 1).text(num + 1);
 					}else{
-						var num = parseInt($("div.server[sid='" + id + "'] div.nav-item[channel='" + chan.toLowerCase() + "'] div.counter").attr("num"));
-						$("div.server[sid='" + id + "'] div.nav-item[channel='" + chan.toLowerCase() + "'] div.counter").attr("num", num + 1).text(num + 1);
+						var num = parseInt($("div.server[sid='" + id + "'] div.nav-item[channel='" + formatSel(chan.toLowerCase()) + "'] div.counter").attr("num"));
+						$("div.server[sid='" + id + "'] div.nav-item[channel='" + formatSel(chan.toLowerCase()) + "'] div.counter").attr("num", num + 1).text(num + 1);
 					}
 				}
 			}
@@ -298,7 +298,6 @@ var burd = {
 		if(isActive){
 			var urls = message.match(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])\.(png|jpg|gif)/ig);
 			if(urls != null){
-				console.log(urls[0]);
 				$("div.channel-content").append('<div class="user-message truncate"><div class="message-date">[' + date('H:i:s', (Date.now()/1000)) + ']</div><div class="message"> <img class="chatimage" src="'+  urls[0]+'"><div><b>File</b>: ' + removeHtml(urls[0].substr(urls[0].lastIndexOf("/") + 1)) + ' [<a href="remove:image">remove</a>]</div></div><div class="clear">&nbsp;</div></div>');
 			}
 		}
@@ -390,8 +389,7 @@ var burd = {
 		this.lastServer = id;
 		var channel = this.getChannel(id,chan,type);
 		var uhtml = "";
-        var nitm = $("div.server[sid='" + id + "'] div.nav-item[channel='" + chan.toLowerCase() + "']");
-        
+        var nitm = $("div.server[sid='" + id + "'] div.nav-item[channel='" + formatSel(chan.toLowerCase()) + "']");
         if(type == "channel"){
             if(!nitm.hasClass("item-selected")){
                 nitm.click();
