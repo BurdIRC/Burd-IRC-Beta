@@ -37,6 +37,8 @@ function parseInput(e,i){
         }
     }
     
+    iplugin.contentWindow.postMessage({command: "event", event: "onInput", network: svr.name, sID: svr.id, channel: channel, input: e},"*");
+    
 	if(type == "console"){
 		if(isCommand){
 			

@@ -3,7 +3,7 @@ var logData = false;
 var rateLimit = 0;
 
 function parseData(e){
-	
+	updateServers = true;
 	if(e.substr(0,1) == "o"){
 		console.log("connected to websocket");
 	}else if(e.substr(0,1) == "a"){
@@ -32,7 +32,7 @@ function parseData(e){
 						send("ENCODING utf8");
 						send("CAP LS 302");
 						send("NICK " + svr.nick);
-						send("USER " + svr.nick + " 0 * https://burdirc.com/");
+						send("USER " + svr.nick + " 0 * https://burdirc.haxed.net/");
 				}
 				return;
 			}
@@ -269,6 +269,7 @@ function parseData(e){
 						}else{
 							burd.addChannelMessage(svr.id, "console", "console", {type: "info",  time: Date.now(), message: "<b>" + removeHtml(usr.nick) + "</b> sent a notice to <b>" + removeHtml(bits[2]) + "</b>: " + colors.parse(linkify(removeHtml(cData)))},true);
 						}
+                        sounds.play("notice");
 					}
 					break;
 				
@@ -533,6 +534,7 @@ function parseData(e){
 					switch(parts[0].toUpperCase()){
 						case "ACTION":
 							burd.addChannelMessage(svr.id, bits[2], "channel", {type: "action", time: Date.now(), from: usr.mask, message: colors.parse(linkify(removeHtml(cData.substr(7))))},true);
+                            checkHighlight();
                             return;
 							break;
                         case "VERSION":
@@ -562,6 +564,7 @@ function parseData(e){
 						if(!itm.hasClass("item-selected")) $("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + formatSel(bits[2].toLowerCase()) + "']").addClass("item-bell");
 					}
 				}
+                if(rRes) sounds.play("highlight");
 				return rRes;
 			}
 			

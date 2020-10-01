@@ -98,7 +98,7 @@ $(function(){
                 {text: "-"},
                 {text: "Quit", callback: function(){
                     burd.controlServer.send(JSON.stringify(
-                        [":" + svr.socket + " QUIT :BurdIRC www.burdirc.com"]
+                        [":" + svr.socket + " QUIT :BurdIRC burdirc.haxed.net"]
                     ));
                     burd.removeServer(svr);
                 }}
@@ -130,7 +130,7 @@ $(function(){
                 {text: "-"},
                 {text: "Close", callback: function(){
                     burd.controlServer.send(JSON.stringify(
-                        [":" + svr.socket + " PART " + channel + " :BurdIRC www.burdirc.com"]
+                        [":" + svr.socket + " PART " + channel + " :BurdIRC burdirc.haxed.net"]
                     ));
                     if(p.hasClass("nav-item")){
                         p.click();

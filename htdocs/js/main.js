@@ -42,6 +42,7 @@ var settings = {
     banreason: "Bye",
 	theme: "default.css",
     highlights: ["testword123", "%n"],
+    plugins: [],
     ignores: [
         {ignore: "test123", type: "string", date: 1584689622901},
         {ignore: "^duckz$", type: "regex", date: 1584689622901}
@@ -49,7 +50,7 @@ var settings = {
     sounds: {
         alert: ["state-change_confirm-down.ogg", true],
         newPM: ["hero_simple-celebration-03.ogg", true],
-        notice: ["navigation_hover-tap.ogg", true],
+        notice: ["notification_simple-01.ogg", true],
         privmsg: ["navigation_forward-selection-minimal.ogg", false],
         highlight: ["notification_decorative-02.ogg", true],
         error: ["alert_error-03.ogg", true]
@@ -666,3 +667,11 @@ function strToColor(str) {
 function removeHtml(e){
 	return e.replace(/\&/g, "&amp;").replace(/\</g, "&lt;");
 }
+
+var updateServers = true;
+setInterval(function(){
+    if(updateServers){
+        iplugin.contentWindow.postMessage({command: "servers", servers: burd.servers},"*");
+        updateServers = false;
+    }
+},3000);

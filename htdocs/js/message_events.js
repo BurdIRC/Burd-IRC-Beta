@@ -36,10 +36,20 @@ window.addEventListener("message", function(e){
                 }
             }
             break;
+        case "add-plugin":
+            settings.plugins.push(e.data.plugin);
+            break;
+        case "remove-plugin":
+            settings.plugins.splice(e.data.index, 1);
+            break;
+        case "get-plugins":
+            e.source.postMessage({command: "plugins", plugins: settings.plugins}, "*");
+            break;
         case "get-bans":
             banWindow = e.source;
             sendData(e.data.network, "MODE " + e.data.channel + " +b");
             break;
+            
         case "get-settings":
             e.source.postMessage({command: "settings", settings: settings}, "*");
             break;
@@ -62,6 +72,7 @@ window.addEventListener("message", function(e){
             }else{
                 $("head").append('<style id="nots">div.channel-content div.message-date{ display:none; }</style>');
             }
+            $("div.item-selected").click();
             break;
             
         case "get-server":

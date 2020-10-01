@@ -44,7 +44,7 @@
 				padding-bottom:5px;
 			}
 			a{
-				color:white;
+				color:#a6adbd;
 			}
             div.options{
                 height: calc(100% - 40px);
@@ -112,46 +112,50 @@
 		</style>
 		
 		<script>
+            var servers = {};
             var server = function(sid){
                 return {
                     addMessage: function(channel, message){
                         /* *=current channel */
                         window.parent.postMessage({command: "add-message", server: sid, channel: channel, message: message}, "*");
+                    },
+                    sendData: function(e){
+                        window.parent.postMessage({command: "send-data", server: sid, data: e}, "*");
                     }
                 }
             }
-            var plugins = [
-                {
-                    id: "ffac0e529fed45a08bfa943d4c053c5b",
-                    name: "My Test Plugin",
-                    version: "1.0.0",
-                    enabled: true,
-                    onPrivMsg: function(e){
-                        if(e.message == "test") server(e.sID).addMessage("*", "someone said test");
-                    },
-                    onPart: function(e){
-                    },
-                    onQuit: function(e){
-                    },
-                    onJoin: function(e){
-                    },
-                    onKick: function(e){
-                    },
-                    onData: function(e){
-                    }
-                    
-                    
-                }
-            ];
+            var plugins = [];
         
 			$(function(){
                 setTimeout(function(){
+                    addPlugins();
+                }, 1000);
+                $("#addplugin").on("click", function(e){
+                    $('#ofile').trigger('click'); 
+                });
+                $("body").on("click", "div.prem", function(e){
+                    var sid = $(this).parent().attr("sid");
                     for(var i in plugins){
-                        $("div.plist").append('<div class="plugin" sid=' + plugins[i].id + '><div class="ptext">' + plugins[i].name + '</div><div class="prem">remove</div></div>');
+                        if(plugins[i].id == sid){
+                            window.parent.postMessage({command: "remove-plugin", index: i}, "*");
+                        }
                     }
-                },1000);
+                    setTimeout(function(){
+                        window.parent.postMessage({command: "get-plugins"}, "*");
+                    },100);
+                   
+                    
+                });
+                window.parent.postMessage({command: "get-plugins"}, "*");
 			})
 			
+            function addPlugins(){
+                $("div.plist").html("");
+                for(var i in plugins){
+                    $("div.plist").append('<div class="plugin" sid=' + plugins[i].id + '><div class="ptext">' + plugins[i].name + '</div><div class="prem">remove</div></div>');
+                }
+            }
+            
 			onArgs = function(e){
 
 			}
@@ -167,18 +171,53 @@
                     case "event":
                         runFunc(e.data.event,e.data);
                         break;
+                    case "servers":
+                        servers = e.data.servers;
+                        break;
+                    case "plugins":
+                        plugins = [];
+                        for(var i in e.data.plugins){
+                            var pn = eval("(" + e.data.plugins[i] + ")");
+                            plugins.push(pn);
+                        }
+                        addPlugins();
+                        break;
                 }
             }, false);
 			
+            
+            function openFile(event){
+                var input = event.target;
+                var reader = new FileReader();
+                reader.onload = function(){
+                  var text = reader.result;
+                  if(text.substr(0,1) != "{") return;
+                  text = text.substr(1);
+                  text = "{id: '" + genID() + "',enabled:true," + text; 
+                  var pn = eval("(" + text + ")");
+                  plugins.push(pn);
+                  window.parent.postMessage({command: "add-plugin", plugin: text}, "*");
+                  addPlugins();
+                };
+                reader.readAsText(input.files[0]);
+            }
+            
+            function genID(){
+                return 'xxxxxxxxxxxxxxx'.replace(/x/g, function(c) {
+                        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                        return v.toString(16);
+                    });
+            }
 		</script>
 	</head>
 	<body>
 		<div class="title"><span>Plugins</span> <div class="quit">&nbsp;</div></div>
-        <div style="margin-bottom:5px;">
-            This section is not functional yet
-        </div>
         <div class="plist">
 
+        </div>
+        <div style="padding:5px;">
+            <input type='file' id="ofile" accept='text/javascript' onchange='openFile(event)' style="display:none">
+            <input type="button" value="Add Plugin" id="addplugin"> - <a onclick="window.open('https://burdirc.haxed.net/plugins.html');return false;" href="https://burdirc.haxed.net/plugins.html">Plugin Docs</a>
         </div>
 	</body>
 </html>
