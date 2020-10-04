@@ -103,12 +103,18 @@
                         }
                     }
                     
-                    console.log($(this)[0].id);
 				});
                 window.addEventListener('beforeunload', function (e) {
                     console.log("unloaded");
                     window.parent.postMessage({command: "replace-settings", settings: settings}, "*");
                 });
+                $("input[type='text']").on("change", function(e){
+                    if(settings[e.target.id] != undefined) settings[e.target.id] = $(this).val();
+                });
+                $("input[type='number']").on("change", function(e){
+                    if(settings[e.target.id] != undefined) settings[e.target.id] = $(this).val();
+                });
+                
 			})
 			
 			onArgs = function(e){
@@ -153,7 +159,7 @@
                     <div class="checkbox" id="cmdautocomplete">Show command autocomplete</div>
                     <div class="text-input">
                         <div class="text-title">Theme:</div>
-                        <div class="ipb"><input type="text" id="theme" value=""></div>
+                        <div class="ipb"><input type="text" id="theme" value="" disabled></div>
                         <div class="clear">&nbsp;</div>
                     </div>
                 </div>
@@ -213,7 +219,7 @@
             <div class="section">
                 <div class="caption">Lists</div>
                 <div class="section-content">
-                    <div><a href="ignorelist.html">Ignore List</a> / <a href="highlights.html">Highlights</a> / <a href="usercommands.html">User Commands</a></div>
+                    <div><a href="ignorelist.html">Ignore List</a> / <a href="highlights.html">Highlights</a> / <a href="usercommands.html">User Commands</a> / <a href="about.html">About</a></div>
                 </div>
             </div>
 

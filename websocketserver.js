@@ -1,7 +1,12 @@
+/*
+This code is released under the Mozilla Public License 2.0
+*/
+
 const WebSocket = require('ws');
 const net = require('net');
 const tls = require('tls');
 const controls = [];
+const pjson = require('./package.json');
 
 let doClose = false;
 
@@ -18,6 +23,7 @@ const wsServer = {
 		wsServer.wss.handleUpgrade(request, socket, head, function connection(ws) {
 			console.log("New websocket connection");
             doClose = false;
+            ws.send('v' + pjson.version);
 			ws.on('message', function incoming(message) {
                 try{
                     const j = JSON.parse(message);
@@ -26,7 +32,6 @@ const wsServer = {
                             let data = j[i].substr(1);
                             const bits = data.split(" ");
                             const ubits = data.toUpperCase().split(" ");
-                            console.log("Data: " + data);
                             if(data.match(/^([1-9])$/ig) != null){
                                 ws.send('a[":' + data + '"]');
                                 controls.push({ws: ws, id: parseInt(bits[0]), client: false, cache: [], data: ""});

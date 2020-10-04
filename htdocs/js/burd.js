@@ -1,3 +1,6 @@
+/*
+This code is released under the Mozilla Public License 2.0
+*/
 var burd = {
 	socketCount: 0,
 	lastServer: "24533d5aa0",
@@ -220,7 +223,7 @@ var burd = {
                 
 				switch(data.type){
 					case "message":
-						uhtml = '<div class="user-message ' + (highlight ? "highlight" : "blank") + ' truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="username"> &lt;<span class="name" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">'+ data.from.split("!")[0] +'</span>&gt;</div><div class="message">&nbsp;' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="user-message ' + (highlight ? "highlight" : "blank") + ' truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="username"> &lt;<span class="name" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">'+ data.from.split("!")[0] +'</span>&gt;</div><div class="message">&nbsp;' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						updateCount();
 						break;
 					case "action":
@@ -228,25 +231,25 @@ var burd = {
 						updateCount();
 						break;
 					case "left":
-						uhtml = '<div class="channel-info user-left truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon text-out">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info user-left truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon text-out">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "joined":
-						uhtml = '<div class="channel-info user-joined truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon text-in">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info user-joined truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon text-in">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "in":
-						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon text-in">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon text-in">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "out":
-						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon text-out">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon text-out">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "info":
-						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon info-default">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon info-default">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "success":
-						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon success">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon success">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "error":
-						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon error-info">&nbsp;</div><div class="message">&nbsp;' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon error-info">&nbsp;</div><div class="message">&nbsp;' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					
 				}
@@ -284,7 +287,7 @@ var burd = {
 		
 		if(add && channel) channel.content.push(data);
 		
-		if(channel && channel.content.length > 100) channel.content.splice(0,1);
+		if(channel && channel.content.length > settings.scrollback) channel.content.splice(0,1);
 		
 		if(add && isActive) $('div.channel-content').scrollTop($('div.channel-content')[0].scrollHeight);
 		
@@ -298,7 +301,7 @@ var burd = {
 		if(isActive){
 			var urls = message.match(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])\.(png|jpg|gif)/ig);
 			if(urls != null){
-				$("div.channel-content").append('<div class="user-message truncate"><div class="message-date">[' + date('H:i:s', (Date.now()/1000)) + ']</div><div class="message"> <img class="chatimage" src="'+  urls[0]+'"><div><b>File</b>: ' + removeHtml(urls[0].substr(urls[0].lastIndexOf("/") + 1)) + ' [<a href="remove:image">remove</a>]</div></div><div class="clear">&nbsp;</div></div>');
+				$("div.channel-content").append('<div class="user-message truncate"><div class="message-date">[' + date(settings.timestring, (Date.now()/1000)) + ']</div><div class="message"> <img class="chatimage" src="'+  urls[0]+'"><div><b>File</b>: ' + removeHtml(urls[0].substr(urls[0].lastIndexOf("/") + 1)) + ' [<a href="remove:image">remove</a>]</div></div><div class="clear">&nbsp;</div></div>');
 			}
 		}
 	},

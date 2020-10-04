@@ -1,3 +1,7 @@
+/*
+This code is released under the Mozilla Public License 2.0
+*/
+
 var partMessage = "BurdIRC www.burdirc.com";
 
 

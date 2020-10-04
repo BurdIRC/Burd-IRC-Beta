@@ -1,3 +1,7 @@
+/*
+This code is released under the Mozilla Public License 2.0
+*/
+
 var whoPollTimer = setInterval(function(){
 	/*
 		this timer will do a WHO on a channel you're in to check for users that are away.

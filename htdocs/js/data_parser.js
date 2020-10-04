@@ -1,3 +1,7 @@
+/*
+This code is released under the Mozilla Public License 2.0
+*/
+
 var logData = false;
 
 var rateLimit = 0;
@@ -6,6 +10,8 @@ function parseData(e){
 	updateServers = true;
 	if(e.substr(0,1) == "o"){
 		console.log("connected to websocket");
+    }else if(e.substr(0,1) == "v"){
+        version = e.substr(1);
 	}else if(e.substr(0,1) == "a"){
 		//json data
 		var jsonData = JSON.parse(e.substr(1));

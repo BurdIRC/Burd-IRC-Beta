@@ -1,4 +1,8 @@
-var version = "0.7.0";
+/*
+This code is released under the Mozilla Public License 2.0
+*/
+
+var version = "0.0.0";
 var title = "Burd IRC Beta";
 var guiAccess = Date.now(); /* This is set to the last time the GUI was access (Date.now()) */
 var joinTimer = 0;
@@ -578,7 +582,7 @@ function showUserMenu(nick){
                     }else{
                        burd.sendLast("MODE " + burd.lastChannel.name + " +b *!" + mask.split("!")[1]);
                     }
-                    burd.sendLast("KICK " + burd.lastChannel.name + " " + nick);
+                    burd.sendLast("KICK " + burd.lastChannel.name + " " + nick + " :" + settings.banreason);
                 }}
             ]);
         }}

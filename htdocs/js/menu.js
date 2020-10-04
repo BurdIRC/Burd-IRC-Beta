@@ -1,3 +1,7 @@
+/*
+This code is released under the Mozilla Public License 2.0
+*/
+
 $(function(){
 	$("body").on("click", "div.menu-item", function(e){
 		$("div.menu-list").remove();

@@ -1,3 +1,7 @@
+/*
+This code is released under the Mozilla Public License 2.0
+*/
+
 let banWindow = false;
 window.addEventListener("message", function(e){
     console.log(e.data);
