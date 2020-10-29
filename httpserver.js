@@ -59,18 +59,29 @@ const server = {
 		fs.exists(filename, function(exists) {
 			if(exists){
 				if(fs.lstatSync(filename).isDirectory()){
+                    let dhtml = "";
 					if(req.url.slice(-1) != "/"){
 						res.writeHead(301, {"Content-Type": "text/html", "Location": req.url + "/"});
 						res.write("I moved\n");
 						res.end();
+                    }else if(req.url.slice(-1) != "/plugins"){
+                        dhtml = "[";
+						fs.readdir(filename, function (err, files) {
+							files.forEach(function (file) {
+								dhtml += "\"" + file + "\",";
+							});
+							dhtml = dhtml.slice(0,-1) + "]";
+							res.writeHead(200, {"Content-Type": "application/json;charset=UTF-8"});
+							res.write(dhtml + "\n");
+							res.end();
+						});
 					}else{
-						console.log("dir " + filename);
-						let dhtml = "<h2>Index of " + req.url + "</h2><hr>";
+						dhtml = "<h2>Index of " + req.url + "</h2><hr>";
 						fs.readdir(filename, function (err, files) {
 							files.forEach(function (file) {
 								dhtml += "<a href=\"" + file + "\">" + file + "</a><br>";
 							});
-							dhtml += "<hr>Burd IRC";
+							dhtml += "<hr>BurdIRC";
 							res.writeHead(200, {"Content-Type": "text/html"});
 							res.write(dhtml + "\n");
 							res.end();

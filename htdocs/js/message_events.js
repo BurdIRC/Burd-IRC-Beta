@@ -76,7 +76,9 @@ window.addEventListener("message", function(e){
             }else{
                 $("head").append('<style id="nots">div.channel-content div.message-date{ display:none; }</style>');
             }
+            processSettings();
             $("div.item-selected").click();
+            
             break;
             
         case "get-server":
@@ -87,6 +89,20 @@ window.addEventListener("message", function(e){
             
         case "last-channel":
             e.source.postMessage({command: "last-channel", channel: burd.lastChannel, network: burd.lastServer}, "*");
+            break;
+            
+        case "unban":
+            for(var i in e.data.list){
+                if(e.data.list[i].length > 0){
+                    var t = "-";
+                    for (x = 0; x < e.data.list[i].length; x++) {
+                        t += "b";
+                        if(t.length > 7) break;
+                    }
+                    sendData(burd.lastServer, "MODE " + burd.lastChannel.name + " " + t + " " + e.data.list[i].join(" "));
+                }
+            }
+            
             break;
             
         case "edit-server":

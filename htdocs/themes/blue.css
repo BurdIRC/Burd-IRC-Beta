@@ -1,0 +1,43 @@
+:root {
+    --main-bg: #021C33;
+    --nav-pane-bg: #112943;
+    --topic-bar-bg: #112943;
+    --users-list-bg: #112943;
+    --input-bg: #112943;
+    --main-color: white;
+    --border-lower-color: #03192d;
+    --border-upper-color: #346396;
+    --button-bg: #2f547d;
+    --list-selected-bg: #165a82;
+    --list-hover-bg: #165a82;
+    --counter-bg: #157bb7;
+    --action-color: #f9f5ff;
+}
+
+div.users-list div.user-idle {
+    background-image: url(../images/idle.svg?color=77a1d0);
+}
+
+::-webkit-scrollbar-track {
+    background: #021c33;
+    border: 0px none #ffffff;
+    border-radius: 0px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2f547d;
+    border: 0px none #d760c5;
+    border-radius: 0px;
+}
+
+input[type='text'], input[type='number'], input[type='password'], textarea {
+    color:#e7edff;
+}
+
+body {
+    /*
+        Use the following font-family declaration to set the desired
+        font for the theme.
+    */
+    font-family: inherit;
+}

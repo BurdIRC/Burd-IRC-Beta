@@ -46,7 +46,9 @@ const wsServer = {
                                             switch(bits[1]){
                                                 case "HOST":
                                                     if(control.client) return; /* do not accept HOST for a control already connected */
-                                                    const host = bits[2].split(":");
+                                                    console.log(bits);
+                                                    //const host = bits[2].split(":");
+                                                    const host = (bits[2].substr(0,bits[2].lastIndexOf(":")) + "|" + bits[2].substr(bits[2].lastIndexOf(":") + 1)).split("|");
                                                     let client = new net.Socket();
                                                     if(host[1].substr(0,1) == "+"){
                                                         /* port starts with + so it's ssl */

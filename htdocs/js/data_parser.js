@@ -43,6 +43,8 @@ function parseData(e){
 				return;
 			}
 			
+            iplugin.contentWindow.postMessage({command: "event", event: "onData", network: svr.name, sID: svr.id, data: data},"*");
+            
 			switch(ubits[0]){
 				case "PING":
 					send("PONG :" + cData);

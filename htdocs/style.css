@@ -389,7 +389,6 @@ div.users-list div.user-idle .usertext {
 div.users-list div.user .usermodes {
 	float: left;
 	font-size: 0.9em;
-	width: 2rem;
 	text-align: right;
 }
 

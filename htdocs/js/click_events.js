@@ -124,34 +124,52 @@ $(function(){
 		var sid = $(this).parent().parent().attr("sid");
 		var svr = burd.getServer(sid);
         var channel = $(this).attr("channel");
-        var type = $(this).attr("TYPE");
+        var type = $(this).attr("type");
         
 		if($(e.target).hasClass("closer")){
 			var p = $(this).prev();
 			var t = $(this);
-            menu.show([
-                {header: removeHtml(channel)},
-                {text: "-"},
-                {text: "Close", callback: function(){
-                    burd.controlServer.send(JSON.stringify(
-                        [":" + svr.socket + " PART " + channel + " :BurdIRC burdirc.haxed.net"]
-                    ));
-                    if(p.hasClass("nav-item")){
-                        p.click();
-                    }else{
-                        t.parent().parent().find("div.console").click();
-                    }
-                    burd.removeChannel(svr, channel, type);
-                }},
-                {text: "Rejoin", callback: function(){
-                    burd.controlServer.send(JSON.stringify(
-                        [":" + svr.socket + " PART " + channel]
-                    ));
-                    burd.controlServer.send(JSON.stringify(
-                        [":" + svr.socket + " JOIN " + channel]
-                    ));
-                }}
-            ]);
+            if(type == "channel"){
+                menu.show([
+                    {header: removeHtml(channel)},
+                    {text: "-"},
+                    {text: "Close", callback: function(){
+                        burd.controlServer.send(JSON.stringify(
+                            [":" + svr.socket + " PART " + channel + " :BurdIRC burdirc.haxed.net"]
+                        ));
+                        if(p.hasClass("nav-item")){
+                            p.click();
+                        }else{
+                            t.parent().parent().find("div.console").click();
+                        }
+                        burd.removeChannel(svr, channel, type);
+                    }},
+                    {text: "Rejoin", callback: function(){
+                        burd.controlServer.send(JSON.stringify(
+                            [":" + svr.socket + " PART " + channel]
+                        ));
+                        burd.controlServer.send(JSON.stringify(
+                            [":" + svr.socket + " JOIN " + channel]
+                        ));
+                    }}
+                ]);
+            }else if(type == "pm"){
+                menu.show([
+                    {header: removeHtml(channel)},
+                    {text: "-"},
+                    {text: "Close", callback: function(){
+                        burd.controlServer.send(JSON.stringify(
+                            [":" + svr.socket + " PART " + channel + " :BurdIRC burdirc.haxed.net"]
+                        ));
+                        if(p.hasClass("nav-item")){
+                            p.click();
+                        }else{
+                            t.parent().parent().find("div.console").click();
+                        }
+                        burd.removeChannel(svr, channel, type);
+                    }}
+                ]);
+            }
 		}else{
 			$("div.item-selected").removeClass("item-selected");
 			$(this).addClass("item-selected");

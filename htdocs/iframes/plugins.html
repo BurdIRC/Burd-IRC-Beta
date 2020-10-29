@@ -114,6 +114,10 @@
 		<script>
             var servers = {};
             var server = function(sid){
+                var svr = false;
+                for(var i in burd.servers){
+                    if(burd.servers[i].id == sid) svr = burd.servers[i];
+                }
                 return {
                     addMessage: function(channel, message){
                         /* *=current channel */
@@ -121,18 +125,26 @@
                     },
                     sendData: function(e){
                         window.parent.postMessage({command: "send-data", server: sid, data: e}, "*");
+                    },
+                    channel: function(e){
+                        if(!svr) return false;
+                        for(var i in svr.channels){
+                            if(svr.channels[i].channel.toLowerCase() == e.toLowerCase()){
+                                return svr.channels[i];
+                            }
+                        }
+                        return false;
                     }
                 }
             }
+            
+            var burd = window.parent.burd;
+            
             var plugins = [];
-        
+            
+
 			$(function(){
-                setTimeout(function(){
-                    addPlugins();
-                }, 1000);
-                $("#addplugin").on("click", function(e){
-                    $('#ofile').trigger('click'); 
-                });
+
                 $("body").on("click", "div.prem", function(e){
                     var sid = $(this).parent().attr("sid");
                     for(var i in plugins){
@@ -140,20 +152,26 @@
                             window.parent.postMessage({command: "remove-plugin", index: i}, "*");
                         }
                     }
-                    setTimeout(function(){
-                        window.parent.postMessage({command: "get-plugins"}, "*");
-                    },100);
-                   
-                    
+
+
                 });
-                window.parent.postMessage({command: "get-plugins"}, "*");
+
+                $.getJSON( "/plugins", function( data ) {
+                    for(let i in data){
+                        $.get( "/plugins/" + data[i], function( text ) {
+                            let p = eval("(" + text + ")");
+                            let np = new p();
+                            np.enabled = true;
+                            plugins.push(np);
+                        });
+                    }
+                });
+                
+                
 			})
 			
             function addPlugins(){
-                $("div.plist").html("");
-                for(var i in plugins){
-                    $("div.plist").append('<div class="plugin" sid=' + plugins[i].id + '><div class="ptext">' + plugins[i].name + '</div><div class="prem">remove</div></div>');
-                }
+
             }
             
 			onArgs = function(e){
@@ -162,7 +180,17 @@
             
             function runFunc(f,e){
                 for(var i in plugins){
-                    if(plugins[i].enabled && plugins[i][f] != undefined) plugins[i][f](e);
+                    if(f == "onData"){
+                        if(plugins[i].enabled && plugins[i][f] != undefined){
+                            plugins[i][f](e);
+                        }else{
+                            
+                        }
+                    }else{
+                        if(plugins[i].enabled && plugins[i][f] != undefined){
+                            plugins[i][f](e);
+                        }
+                    }
                 }
             }
 
@@ -174,34 +202,9 @@
                     case "servers":
                         servers = e.data.servers;
                         break;
-                    case "plugins":
-                        plugins = [];
-                        for(var i in e.data.plugins){
-                            var pn = eval("(" + e.data.plugins[i] + ")");
-                            plugins.push(pn);
-                        }
-                        addPlugins();
-                        break;
                 }
             }, false);
-			
-            
-            function openFile(event){
-                var input = event.target;
-                var reader = new FileReader();
-                reader.onload = function(){
-                  var text = reader.result;
-                  if(text.substr(0,1) != "{") return;
-                  text = text.substr(1);
-                  text = "{id: '" + genID() + "',enabled:true," + text; 
-                  var pn = eval("(" + text + ")");
-                  plugins.push(pn);
-                  window.parent.postMessage({command: "add-plugin", plugin: text}, "*");
-                  addPlugins();
-                };
-                reader.readAsText(input.files[0]);
-            }
-            
+
             function genID(){
                 return 'xxxxxxxxxxxxxxx'.replace(/x/g, function(c) {
                         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -216,8 +219,7 @@
 
         </div>
         <div style="padding:5px;">
-            <input type='file' id="ofile" accept='text/javascript' onchange='openFile(event)' style="display:none">
-            <input type="button" value="Add Plugin" id="addplugin"> - <a onclick="window.open('https://burdirc.haxed.net/plugins.html');return false;" href="https://burdirc.haxed.net/plugins.html">Plugin Docs</a>
+            <a onclick="window.open('https://burdirc.haxed.net/plugins.html');return false;" href="https://burdirc.haxed.net/plugins.html">Plugin Docs</a>
         </div>
 	</body>
 </html>
