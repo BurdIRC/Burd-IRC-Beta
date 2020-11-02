@@ -1,6 +1,9 @@
 :root {
 	--main-bg: #3F4551;
+    --dark-bg:#353945;
 	--main-color: #CDCDCF;
+    --light-color: white;
+    --dark-color:#898c92;
 	--main-nick-color: #CDCDCF;
 	--border-upper-color: #69696B;
 	--border-lower-color: #09090A;
@@ -94,11 +97,11 @@ input[type='text'], input[type='number'], input[type='password'], textarea {
 	font-weight: 400;
 	padding: .25rem;
 	outline: none;
+    font-family: 'Open Sans', sans-serif;
 }
 
 html, body {
 	color: var(--main-color);
-	<<<<<<< HEAD font-size: 1rem;
 	font-family: 'Open Sans', sans-serif;
 	padding: 0;
 	margin: 0;
@@ -486,8 +489,9 @@ div.user-message, div.channel-info {
 }
 
 div.user-message div.message, div.channel-info div.message {
-	display: table-cell;
-	word-break: break-word;
+    display: table-cell;
+    word-break: break-word;
+    white-space: pre-wrap;
 }
 
 div.action {
@@ -551,7 +555,7 @@ div.emoji-icon:hover {
 }
 
 a {
-	color: rgb(0, 66, 133);
+	color: rgb(132 162 193);
 }
 
 a:hover {

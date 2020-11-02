@@ -59,7 +59,8 @@ var burd = {
 		}
 
 	},
-	addServerUser: function(id,nick){
+	addServerUser: function(id,nick,host){
+        if (host == undefined) host = "";
 		var svr = this.getServer(id);
 		for(var i in svr.prefixes){
 			nick = nick.replace(svr.prefixes[i], "");
@@ -69,7 +70,7 @@ var burd = {
 			if(svr.users[nick.toLowerCase()] != undefined) return;
 		}
 
-		svr.users[nick.toLowerCase()] = {away: false, color: strToColor(nick.toLowerCase()), notes: "", mask: ""};
+		svr.users[nick.toLowerCase()] = {away: false, color: strToColor(nick.toLowerCase()), notes: "", mask: host};
 		
 		function getRandomColor() {
 			var letters = 'ABCDEF'.split('');
@@ -95,6 +96,8 @@ var burd = {
 		$("div#nav-pane div.nav-items").append('<div class="server" sid="' + s.id + '"><div class="console" channel="console" type="console"><span>' + s.name +'</span><div class="counter" num="0">0</div><div class="closer">&nbsp;</div></div><div class="items"></div></div>');
 		this.servers.push({
 			id: id,
+            whoPolling: true,
+            caps: [],
 			name: s.name,
 			nick: s.nick,
 			socket: this.socketCount,
@@ -223,12 +226,11 @@ var burd = {
                 
 				switch(data.type){
 					case "message":
-						uhtml = '<div class="user-message ' + (highlight ? "highlight" : "blank") + ' truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="username"> &lt;<span class="name" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">'+ data.from.split("!")[0] +'</span>&gt;</div><div class="message">&nbsp;' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="user-message ' + (highlight ? "highlight" : "blank") + ' truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="username"> &lt;<span class="name" title="' + formatAttr(ui.mask) + '" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">'+ data.from.split("!")[0] +'</span>&gt;</div><div class="message">&nbsp;' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						updateCount();
 						break;
 					case "action":
-						uhtml = '<div class="user-message action ' + (highlight ? "highlight" : "blank") + ' truncate"><div class="message-date">[16:11:35]</div><div class="username"> * <span class="name">'+ data.from.split("!")[0] +'</span> </div><div class="message">&nbsp;' + data.message + ' *</div><div class="clear">&nbsp;</div></div>';
-						updateCount();
+						uhtml = '<div class="user-message action ' + (highlight ? "highlight" : "blank") + ' truncate"><div class="message-date">[16:11:35]</div><div class="username" title="' + formatAttr(ui.mask) + '"> * <span class="name">'+ data.from.split("!")[0] +'</span> </div><div class="message">&nbsp;' + data.message + ' *</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "left":
 						uhtml = '<div class="channel-info user-left truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon text-out">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
@@ -375,11 +377,12 @@ var burd = {
 		var channel = this.getChannel(svr.id,chan,"channel");
 		var isActive = false;
 		if(this.lastServer == svr.id && this.lastChannel.type == "channel" && this.lastChannel.name.toLowerCase() == chan.toLowerCase()) isActive = true;
+        console.log(isActive);
 		if(isActive){
 			var uhtml = "";
 			for(var i in channel.users){
 				var ui = this.getUser(svr.id, channel.users[i][0]);
-				uhtml += '<div class="user ' + (ui.away ? "user-idle" : "" ) + '" nick="' + formatAttr(channel.users[i][0].toLowerCase()) + '"><span class="usertext" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">' + channel.users[i][0] + '</span><span class="usermodes">' + channel.users[i][1] + '</span></div>';
+				uhtml += '<div title="' + formatAttr(ui.mask) + '" class="user ' + (ui.away ? "user-idle" : "" ) + '" nick="' + formatAttr(channel.users[i][0].toLowerCase()) + '"><span class="usertext" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">' + channel.users[i][0] + '</span><span class="usermodes">' + channel.users[i][1] + '</span></div>';
 			}
 			document.getElementById("userslist").innerHTML = uhtml;
 			$("div.channel-window span.unum").text(channel.users.length);
@@ -425,7 +428,7 @@ var burd = {
 				
 				for(var i in channel.users){
 					var ui = this.getUser(id, channel.users[i][0]);
-					uhtml += '<div class="user ' + (ui.away ? "user-idle" : "" ) + '" nick="' + formatAttr(channel.users[i][0].toLowerCase()) + '"><span class="usertext" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">' + channel.users[i][0] + '</span><span class="usermodes">' + channel.users[i][1] + '</span></div>';
+					uhtml += '<div title="' + formatAttr(ui.mask) + '" class="user ' + (ui.away ? "user-idle" : "" ) + '" nick="' + formatAttr(channel.users[i][0].toLowerCase()) + '"><span class="usertext" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">' + channel.users[i][0] + '</span><span class="usermodes">' + channel.users[i][1] + '</span></div>';
 				}
 				//$("div.users-list div.users").append(uhtml);
 				

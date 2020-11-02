@@ -64,7 +64,7 @@
                 overflow-y: scroll;
             }
             div.text-input{
-                margin-top:5px;
+                margin-top:10px;
             }
             div.text-input input{
                 width:120px;
@@ -178,6 +178,7 @@
                     <div class="checkbox" id="emojis">Show emoticons</div>
                     <div class="checkbox" id="nickColors">Allow colored nicknames</div>
                     <div class="checkbox" id="textColors">Allow mIRC colors</div>
+                    <!--<div class="checkbox" id="userCards">Show user cards instead of menu</div>-->
                     
                     <div class="text-input">
                         <div class="text-title">Scrollback:</div>
@@ -203,12 +204,12 @@
                 <div class="caption">Operator Options</div>
                 <div class="section-content">
                     <div class="text-input">
-                        <div class="text-title">Default mask:</div>
-                        <div class="ipb"><input type="text" id="banmask" value="*!%i@%h"></div>
+                        <div class="text-title">Kick mask:</div>
+                        <div class="ipb"><input type="text" id="banmask" style="width:230px;" value="*!%i@%h"></div>
                         <div class="clear">&nbsp;</div>
                     </div>
                     <div class="text-input">
-                        <div class="text-title">Default kick reason:</div>
+                        <div class="text-title">Kick reason:</div>
                         <div class="ipb"><input type="text" style="width:230px;" id="banreason" value="Bye"></div>
                         <div class="clear">&nbsp;</div>
                     </div>
@@ -217,7 +218,7 @@
             
             
             <div class="section">
-                <div class="caption">Lists</div>
+                <div class="caption">Misc</div>
                 <div class="section-content">
                     <div><a href="ignorelist.html">Ignore List</a> / <a href="highlights.html">Highlights</a> / <a href="usercommands.html">User Commands</a> / <a href="about.html">About</a></div>
                 </div>

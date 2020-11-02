@@ -1,6 +1,6 @@
 class plugin{
     name = "Test plugin";
-    autor = "matt ryan";
+    author = "matt ryan";
     
     onPrivMsg(e){
         //console.log(e);

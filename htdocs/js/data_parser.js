@@ -6,6 +6,8 @@ var logData = false;
 
 var rateLimit = 0;
 
+var capTimer = 0;
+
 function parseData(e){
 	updateServers = true;
 	if(e.substr(0,1) == "o"){
@@ -119,8 +121,13 @@ function parseData(e){
 					var names = svr.cache.substr(1).replace(/\s\s/g, " ").replace(/\s$/g, "").split(" ");
 					var c = burd.getChannel(svr.id, bits[3], "channel");
 					for(var i in names){
-						var nickInfo = getUserPrefixes(names[i], svr);
-						burd.addServerUser(svr.id, nickInfo.nick);
+                        var info = names[i].split("!");
+						var nickInfo = getUserPrefixes(info[0], svr);
+                        if(info.length == 1){
+                            burd.addServerUser(svr.id, nickInfo.nick);
+                        }else{
+                            burd.addServerUser(svr.id, nickInfo.nick, nickInfo.nick + "!" + info[1]);
+                        }
 						c.users.push([nickInfo.nick, nickInfo.prefixes.join("")]);
 					}
 					burd.sortUsers(c, svr);
@@ -130,32 +137,57 @@ function parseData(e){
 					
 					
 				case E.RPL_WHOISUSER:
-					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> (" + bits[4] + "@" + bits[5] + "): <span class=whois2>" + removeHtml(cData) + "</span>"},true);
-					break;
+                    if($("div#usercard:visible").length>0){
+                        $("div#uchostmask").text(bits[3] + "!" + bits[4] + "@" + bits[5]);
+                    }else{
+                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> (" + bits[4] + "@" + bits[5] + "): <span class=whois2>" + removeHtml(cData) + "</span>"},true);
+					}
+                    break;
 					
 				case E.RPL_WHOISCHANNELS:
-					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> " + removeHtml(cData)},true);
-					break;
+                    if($("div#usercard:visible").length>0){
+                        $("div#ucchannels").text(cData);
+                    }else{
+                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> " + removeHtml(cData)},true);
+					}
+                    break;
 					
 				case E.RPL_WHOISSERVER:
-					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> <span class=whois3>" + removeHtml(bits[4]) + " :" + removeHtml(cData) + "</span>"},true);
-					break;		
+                    if($("div#usercard:visible").length>0){
+                         $("div#ucserver").text(bits[4]);
+                    }else{
+                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> <span class=whois3>" + removeHtml(bits[4]) + " :" + removeHtml(cData) + "</span>"},true);
+					}
+                    break;		
 					
 				case E.RPL_WHOISSECURE:
-					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> " + removeHtml(cData)},true);
-					break;		
+                    if($("div#usercard:visible").length>0){
+                    }else{
+                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> " + removeHtml(cData)},true);
+					}
+                    break;		
 					
 				case E.RPL_WHOISACCOUNT:
-					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> is logged in as " + removeHtml(bits[4])},true);
-					break;
+                    if($("div#usercard:visible").length>0){
+                        $("div#ucaccount").text(bits[4]);
+                    }else{
+                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> is logged in as " + removeHtml(bits[4])},true);
+					}
+                    break;
 				
 				case E.RPL_WHOISIDLE:
-					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> seconds idle: " + bits[4] + ", Signed on: " + timeConverter(parseInt(bits[5]) * 1000)},true);
-					break;
+					if($("div#usercard:visible").length>0){
+                    }else{
+                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> seconds idle: " + bits[4] + ", Signed on: " + timeConverter(parseInt(bits[5]) * 1000)},true);
+					}
+                    break;
 					
 				case E.RPL_ENDOFWHOIS:
-					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> End of WHOIS"},true);
-					break;
+                    if($("div#usercard:visible").length>0){
+                    }else{
+                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> End of WHOIS"},true);
+					}
+                    break;
                 case E.RPL_ENDOFWHO:
                     svr.lastWho = Date.now();
                     break;
@@ -225,23 +257,52 @@ function parseData(e){
 					
 				/* -------------------------------------------- */	
 				
+                case "AWAY":
+                    var nick = parseUser(bits[0]).nick;
+                    if(bits.length > 2){
+                        //they are away
+                        if(svr.users[nick.toLowerCase()] != undefined){
+                            svr.users[nick.toLowerCase()].away = true;
+                            if(svr.id == burd.lastServer){
+                                $("div.user[nick='" + nick.toLowerCase() + "']").addClass("user-idle");
+                            }
+                        }
+                    }else{
+                        if(svr.users[nick.toLowerCase()] != undefined){
+                            svr.users[nick.toLowerCase()].away = false;
+                            if(svr.id == burd.lastServer){
+                                $("div.user[nick='" + nick.toLowerCase() + "']").removeClass("user-idle");
+                            }
+                        }
+                    }
+                    break;
+                
+                
 				case "CAP":
 					switch(ubits[3]){
 						case "LS":
-							var mycaps = ["multi-prefix"];
-							var capsfound = [];
+                        case "NEW":
+							var mycaps = ["multi-prefix", "away-notify", "cap-notify", "extended-join", "userhost-in-names"];
 							var scaps = cData.split(" ");
                             
                             if(info.auth.type == "SASL Plain") mycaps.push("sasl");
                             
 							for(var i in scaps){
-								if(mycaps.includes(scaps[i])) capsfound.push(scaps[i]);
+								if(mycaps.includes(scaps[i])) svr.caps.push(scaps[i]);
 							}
-							if(capsfound.length == 0){
-								send("CAP END");
-							}else{
-								send("CAP REQ :" + capsfound.join(" "));
-							}
+                            
+                            clearTimeout(capTimer);
+                            capTimer = setTimeout(function(){
+                            
+                                if(svr.caps.length == 0){
+                                    send("CAP END");
+                                }else{
+                                    send("CAP REQ :" + svr.caps.join(" "));
+                                    if(svr.caps.includes("away-notify")) svr.whoPolling = false;
+                                }
+                            
+                            }, 1000);
+                            
 							break;
 						case "ACK":
                             if(info.auth.type == "SASL Plain"){
@@ -261,7 +322,6 @@ function parseData(e){
 					break;
                     
                 case "CLOSED":
-                    console.log("closed");
                     burd.addGlobalMessage(svr.id, {type: "error",  time: Date.now(), message: "You're no longer connected to this network!"});
                     break;
 					
@@ -398,6 +458,7 @@ function parseData(e){
                     
 				case "JOIN":
 					var usr = parseUser(bits[0]);
+                    if(bits.length > 3) cData = bits[2];
                     iplugin.contentWindow.postMessage({command: "event", event: "onJoin", network: svr.name, sID: svr.id, channel: cData, user: usr},"*");
                     if(svr.users[usr.nick.toLowerCase()] != undefined) svr.users[usr.nick.toLowerCase()].mask = usr.mask;
 					if($("div.server[sid='" + svr.id + "'] div.items div.nav-item[channel='" + formatSel(cData.toLowerCase()) + "']").length > 0){
@@ -437,6 +498,8 @@ function parseData(e){
                             if(getChannelSettings(svr.id, cData.toLowerCase()).requestOps) send("CHANSERV OP " + cData);
                             if(getChannelSettings(svr.id, cData.toLowerCase()).requestVoice) send("CHANSERV VOICE " + cData);
                             
+                            svr.whoPollList.unshift(cData.toLowerCase());
+                            
 							$("div.server[sid='" + svr.id + "'] div.items").append('<div class="nav-item" channel="'+ formatAttr(cData.toLowerCase()) +'" type="channel"><div class="item-name">' + removeHtml(cData) + '</div><div class="counter" num="0">0</div><div class="closer">&nbsp;</div></div>');
 							svr.channels.push(
 								{
@@ -455,6 +518,7 @@ function parseData(e){
                                 clearTimeout(joinTimer);
                                 joinTimer = setTimeout(function(){
                                     burd.showChannel(svr.id, cData, "channel");
+                                    burd.updateGuiNames(svr, cData);
                                 }, 500);
                             }
 						}

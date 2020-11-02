@@ -3,7 +3,7 @@ This code is released under the Mozilla Public License 2.0
 */
 
 var version = "0.0.0";
-var title = "Burd IRC Beta";
+var title = "BurdIRC";
 var guiAccess = Date.now(); /* This is set to the last time the GUI was access (Date.now()) */
 var joinTimer = 0;
 var fileInput = {
@@ -82,14 +82,19 @@ var settings = {
         ["wii","whois %2 %2"],
         ["p","part"],
         ["leave","part"],
-        ["ns","msg nickserv"],
         ["c","clear"],
-        ["ni","msg nickserv identify &2"]
+        ["ni","msg nickserv identify &2"],
+        ["ns","nickserv &2"],
+        ["cs","chanserv &2"]
     ],
     networks:[
     
-    ]
+    ],
+    userCards: false
 };
+
+
+
 
 var channelSettings = {
     "default": {
