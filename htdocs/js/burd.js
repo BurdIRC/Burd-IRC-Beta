@@ -226,11 +226,11 @@ var burd = {
                 
 				switch(data.type){
 					case "message":
-						uhtml = '<div class="user-message ' + (highlight ? "highlight" : "blank") + ' truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="username"> &lt;<span class="name" title="' + formatAttr(ui.mask) + '" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">'+ data.from.split("!")[0] +'</span>&gt;</div><div class="message">&nbsp;' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="user-message ' + (highlight ? "highlight" : "blank") + ' truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="username"> &lt;<span class="name" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">'+ data.from.split("!")[0] +'</span>&gt;</div><div class="message">&nbsp;' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						updateCount();
 						break;
 					case "action":
-						uhtml = '<div class="user-message action ' + (highlight ? "highlight" : "blank") + ' truncate"><div class="message-date">[16:11:35]</div><div class="username" title="' + formatAttr(ui.mask) + '"> * <span class="name">'+ data.from.split("!")[0] +'</span> </div><div class="message">&nbsp;' + data.message + ' *</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="user-message action ' + (highlight ? "highlight" : "blank") + ' truncate"><div class="message-date">[16:11:35]</div><div class="username"> * <span class="name">'+ data.from.split("!")[0] +'</span> </div><div class="message">&nbsp;' + data.message + ' *</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "left":
 						uhtml = '<div class="channel-info user-left truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon text-out">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
