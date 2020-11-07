@@ -25,6 +25,7 @@ const wsServer = {
             doClose = false;
             ws.send('v' + pjson.version);
 			ws.on('message', function incoming(message) {
+
                 try{
                     const j = JSON.parse(message);
                     for(let i in j){
@@ -72,15 +73,19 @@ const wsServer = {
                                                         });
                                                     }
                                                     client.on('data', function(data) {
+                                                        const hex = data.toString('hex');
                                                         data = data.toString().replace(/\r/g, "");
                                                         control.data = control.data + data;
                                                         if(control.data.slice(-1) == "\n"){
                                                             const parts = control.data.split("\n");
                                                             for(let i in parts){
-                                                               if(parts[i].length > 0) ws.send("a" + JSON.stringify([":" + control.id + " " + parts[i]]));
+                                                               if(parts[i].length > 0){
+                                                                   ws.send("a" + JSON.stringify([":" + control.id + " " + parts[i]]));
+                                                               }
                                                             }
                                                             control.data = "";
                                                         }
+                                                        ws.send("a" + JSON.stringify([":" + control.id + " HEX " + hex]));
                                                     });
                                                     client.on('close', function() {
                                                         console.log('Connection closed');

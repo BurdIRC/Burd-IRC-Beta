@@ -43,16 +43,7 @@ function parseInput(e,i){
     
     iplugin.contentWindow.postMessage({command: "event", event: "onInput", network: svr.name, sID: svr.id, channel: channel, input: e},"*");
     
-	if(type == "console"){
-		if(isCommand){
-			
-			burd.controlServer.send(JSON.stringify(
-				[":" + svr.socket + " " + e.substr(1)]
-			));
-		}else{
-			burd.addChannelMessage(burd.lastServer, channel, type, {type: "info",  time: Date.now(), message: "This window does not accept privmsg"},true);
-		}
-	}else if(type == "channel" || type == "pm"){
+	if(1){
 		if(isCommand){
 
 			switch(bits[0].substr(1).toUpperCase()){
@@ -254,7 +245,10 @@ function parseInput(e,i){
 						send("PRIVMSG " + bits[1] + " :" + after(1));
 					}else{
                         var chan = burd.getChannel(svr.id, bits[1], "pm");
-                        if(!chan){
+                        if(chan){
+                            burd.showChannel(svr.id, bits[1], "channel");
+                            burd.updateGuiNames(svr, bits[1]);
+                        }else{
                             $("div.server[sid='" + svr.id + "'] div.items").append('<div class="nav-item" channel="'+ removeHtml(bits[1].toLowerCase()) +'" type="pm"><div class="item-name">' + removeHtml(bits[1]) + '</div><div class="counter" num="0">0</div><div class="closer">&nbsp;</div></div>');
                             svr.channels.push(
                                 {
@@ -267,6 +261,8 @@ function parseInput(e,i){
                                     content: []
                                 }
                             );
+                            burd.showChannel(svr.id, bits[1], "channel");
+                            burd.updateGuiNames(svr, bits[1]);
                         }
 					}
 					break;
@@ -357,12 +353,14 @@ function parseInput(e,i){
 					true);
 					break;
 				default:
+                    if(type=="console") return;
 					send(bits[0].substr(1).toUpperCase() + " " + after(0));
 					burd.addChannelMessage(burd.lastServer, channel, type,
 						{type: "out", time: Date.now(), from: svr.nick + "!*@*", message: removeHtml(bits[0].substr(1).toUpperCase() + " " + after(0))},
 					true);
 			}
 		}else{
+            if(type=="console") return;
 			burd.addChannelMessage(burd.lastServer, channel, type,
 				{type: "message", time: Date.now(), from: svr.nick + "!*@*", message: linkify(removeHtml(e))},
 			true);
