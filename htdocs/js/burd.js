@@ -377,7 +377,6 @@ var burd = {
 		var channel = this.getChannel(svr.id,chan,"channel");
 		var isActive = false;
 		if(this.lastServer == svr.id && this.lastChannel.type == "channel" && this.lastChannel.name.toLowerCase() == chan.toLowerCase()) isActive = true;
-        console.log(isActive);
 		if(isActive){
 			var uhtml = "";
 			for(var i in channel.users){

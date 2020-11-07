@@ -17,7 +17,7 @@ var fileInput = {
         model.append('file', $('#file-input')[0].files[0]);
 
         $.ajax({
-            url: 'https://burdirc.haxed.net/media',
+            url: 'https://media.haxed.net/?burdirc=1',
             type: 'POST',
             dataType: 'json',
             data: model,

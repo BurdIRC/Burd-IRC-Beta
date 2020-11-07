@@ -96,6 +96,9 @@
                         case "SASL Plain":
                             $("div.login-info").show();
                             break;
+                        case "SASL External":
+                            $("div.login-info").hide();
+                            break;
                     }
                 });
                 
@@ -204,6 +207,9 @@
                             case "SASL Plain":
                                 $("div.login-info").show();
                                 break;
+                            case "SASL External":
+                                $("div.login-info").hide();
+                                break;
                         }
                         
                         $("input#login").val(e.data.server.auth.username);
@@ -270,6 +276,7 @@
                     <option>NickServ</option>
                     <option>Server password</option>
                     <option>SASL Plain</option>
+                    <option>SASL External</option>
                 </select>
             </div>
             

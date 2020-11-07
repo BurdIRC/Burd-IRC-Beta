@@ -11,7 +11,6 @@ var capTimer = 0;
 function parseData(e){
 	updateServers = true;
 	if(e.substr(0,1) == "o"){
-		console.log("connected to websocket");
     }else if(e.substr(0,1) == "v"){
         version = e.substr(1);
 	}else if(e.substr(0,1) == "a"){
@@ -36,7 +35,12 @@ function parseData(e){
 			if(jsonData[i].length == 2){
 				
 				if(data == ""){
-						send("HOST " + info.server + ":" + (info.ssl ? "+"+info.port : info.port));
+                        console.log(info.auth.type);
+                        if(info.auth.type == "SASL External"){
+                            send("SASL " + info.server + ":" + (info.ssl ? "+"+info.port : info.port) + " " + svr.name);
+                        }else{
+                            send("HOST " + info.server + ":" + (info.ssl ? "+"+info.port : info.port));
+                        }
 						send("ENCODING utf8");
 						send("CAP LS 302");
 						send("NICK " + svr.nick);
@@ -284,7 +288,7 @@ function parseData(e){
                         case "NEW":
 							var mycaps = ["multi-prefix", "away-notify", "cap-notify", "extended-join", "userhost-in-names"];
 							var scaps = cData.split(" ");
-                            
+                            console.log(cData);
                             if(info.auth.type == "SASL Plain") mycaps.push("sasl");
                             
 							for(var i in scaps){
@@ -381,7 +385,7 @@ function parseData(e){
 					break;
 				
 				case "PRIVMSG":
-					if(ignore.test(data)) return console.log("ignored");
+					if(ignore.test(data)) return;
 					var usr = parseUser(bits[0]);
                     
                     iplugin.contentWindow.postMessage({command: "event", event: "onPrivMsg", network: svr.name, sID: svr.id, channel: bits[2], user: usr, message: cData},"*");
@@ -467,7 +471,6 @@ function parseData(e){
                         
                         if(usr.nick.toLowerCase() == svr.nick.toLowerCase()){
                             burd.getChannel(svr.id, cData, "channel").users = [];
-                            console.log("clear users");
                         }else{
                             burd.addChannelUser(svr, cData, usr.nick);
                             burd.addServerUser(svr.id, usr.nick);

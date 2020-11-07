@@ -7,6 +7,7 @@ const net = require('net');
 const tls = require('tls');
 const controls = [];
 const pjson = require('./package.json');
+const fs = require('fs');
 
 let doClose = false;
 
@@ -46,21 +47,37 @@ const wsServer = {
                                         }else{
                                             switch(bits[1]){
                                                 case "HOST":
+                                                case "SASL":
                                                     if(control.client) return; /* do not accept HOST for a control already connected */
                                                     console.log(bits);
-                                                    //const host = bits[2].split(":");
                                                     const host = (bits[2].substr(0,bits[2].lastIndexOf(":")) + "|" + bits[2].substr(bits[2].lastIndexOf(":") + 1)).split("|");
                                                     let client = new net.Socket();
                                                     if(host[1].substr(0,1) == "+"){
                                                         /* port starts with + so it's ssl */
-                                                        client = tls.connect({port:host[1].substr(1), host: host[0], rejectUnauthorized: false}, function() {
-                                                            ws.send('a[":' + control.id + ' control connected"]');
-                                                            control.client = client;
-                                                            for(let z in control.cache){
-                                                                control.client.write(control.cache[z] + "\r\n");
-                                                            }
-                                                            control.cache = [];
-                                                        });
+                                                        if(bits[1] == "SASL"){
+                                                            
+                                                            /* The user is connecting with SASL External, so we must use the certificate associated with the server */
+                                                            const certPath = "certs/" + bits[3];
+                                                            if (!fs.existsSync(certPath + ".crt") || !fs.existsSync(certPath + ".key")) return console.log("No certificate for the network " + bits[3] + " was found!");
+                                                            console.log("Connecting using SASL External");
+                                                            client = tls.connect({key: fs.readFileSync("certs/example.key"), cert: fs.readFileSync("certs/example.crt"), requestCert:true, port:host[1].substr(1), host: host[0], rejectUnauthorized: false}, function() {
+                                                                ws.send('a[":' + control.id + ' control connected"]');
+                                                                control.client = client;
+                                                                for(let z in control.cache){
+                                                                    control.client.write(control.cache[z] + "\r\n");
+                                                                }
+                                                                control.cache = [];
+                                                            });
+                                                        }else{
+                                                            client = tls.connect({port:host[1].substr(1), host: host[0], rejectUnauthorized: false}, function() {
+                                                                ws.send('a[":' + control.id + ' control connected"]');
+                                                                control.client = client;
+                                                                for(let z in control.cache){
+                                                                    control.client.write(control.cache[z] + "\r\n");
+                                                                }
+                                                                control.cache = [];
+                                                            });
+                                                        }
                                                         console.log("SSL Connection");
                                                     }else{
                                                         client.connect(host[1], host[0], function() {
