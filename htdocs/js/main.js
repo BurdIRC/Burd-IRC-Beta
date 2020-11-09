@@ -619,6 +619,7 @@ function linkify(e) {
 
 function formatAttr(e){
     //e = e.replace(/\'/g, "&rdquo;");
+    if(e==undefined) return "";
     e = e.replace(/\"/g, '&quot;');
     e = e.replace(/\\/g, "&bsol;");
     return e;
