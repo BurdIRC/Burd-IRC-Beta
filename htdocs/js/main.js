@@ -90,7 +90,8 @@ var settings = {
     networks:[
     
     ],
-    userCards: false
+    userCards: false,
+    spamTimer: 3000
 };
 
 

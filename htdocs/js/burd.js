@@ -23,6 +23,15 @@ var burd = {
 		};
 		this.controlServer.onclose = function(e){
 			$("div#app").hide();
+            $("div#failure").show();
+            setInterval(function(){
+                this.controlServer = new WebSocket("ws://" + window.location.host + "/ws");
+                this.controlServer.onopen = function(e){
+                    window.location.reload();
+                };
+                this.controlServer.onclose = function(e){
+                };
+            },2000);
 		};
 		
 	},

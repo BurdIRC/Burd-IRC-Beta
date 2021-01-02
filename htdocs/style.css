@@ -121,9 +121,12 @@ body {
 	user-select: none;
 }
 
-div#app {
+div#app,div#failure {
 	height: 100%;
 	width: 100%;
+}
+div#failure{
+    display:none;
 }
 
 div#app div#nav-pane {

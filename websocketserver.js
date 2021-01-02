@@ -122,6 +122,11 @@ const wsServer = {
                                     }
                                 }
                             }
+                        }else{
+                            console.log(j[i]);
+                            if(j[i] == "CLOSED"){
+                                process.exit();
+                            }
                         }
                     }
                 }catch(err){
@@ -143,7 +148,7 @@ const wsServer = {
                 
                 
                 setTimeout(function(){
-                    if(doClose) process.exit();
+                    //if(doClose) process.exit();
                 },2000);
                 
                 

@@ -47,6 +47,30 @@ function parseInput(e,i){
 		if(isCommand){
 
 			switch(bits[0].substr(1).toUpperCase()){
+                
+                case "SPAM":
+                    navigator.clipboard.readText()
+                    .then(text => {
+                        var tData = text.replace(/\r/g,"").split("\n");
+
+                        
+                        for (var j = 0; j < 20; j++) {
+                            setTimeout(function(){
+                                for (var x = 0; x < 4; x++) {
+                                    if(tData.length > 0){
+                                        parseInput(tData[0], null);
+                                        tData.splice(0,1);
+                                    }
+                                }
+                            },settings.spamTimer * j);
+                        }
+                        
+
+                    })
+                    .catch(err => {
+                    });
+                    break;
+                
 				case "ADMIN":
 				case "DIE":
 				case "INFO":
