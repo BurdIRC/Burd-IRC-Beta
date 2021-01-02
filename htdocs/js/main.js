@@ -571,7 +571,7 @@ function showUserMenu(nick){
                 }},
                 {text: "-"},
                 {text: "KICK User", callback: function(){
-                    burd.sendLast("KICK " + burd.lastChannel.name + " " + nick);
+                    burd.sendLast("KICK " + burd.lastChannel.name + " " + nick + " :" + settings.banreason);
                 }},
                 {text: "BAN User", callback: function(){
                     var mask = svr.users[nick].mask;

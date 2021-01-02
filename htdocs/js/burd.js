@@ -9,7 +9,11 @@ var burd = {
 	servers: [],
 	controlServer: false,
 	connectToControl: function(){
-		this.controlServer = new WebSocket("ws://" + window.location.host + "/ws");
+        var url = new URL(window.location.href);
+        var csUrl = "ws://" + window.location.host + "/ws";
+        if(url.searchParams.get("wsport")!=null) csUrl = "ws://" + window.location.host.split(":")[0] + ":" + url.searchParams.get("wsport") + "/ws";
+        
+		this.controlServer = new WebSocket(csUrl);
 		this.controlServer.onmessage = function(e){
 			parseData(e.data);
 		};
@@ -25,13 +29,13 @@ var burd = {
 			$("div#app").hide();
             $("div#failure").show();
             setInterval(function(){
-                this.controlServer = new WebSocket("ws://" + window.location.host + "/ws");
+                this.controlServer = new WebSocket(csUrl);
                 this.controlServer.onopen = function(e){
                     window.location.reload();
                 };
                 this.controlServer.onclose = function(e){
                 };
-            },2000);
+            },10000);
 		};
 		
 	},
@@ -312,7 +316,7 @@ var burd = {
 		if(isActive){
 			var urls = message.match(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])\.(png|jpg|gif)/ig);
 			if(urls != null){
-				$("div.channel-content").append('<div class="user-message truncate"><div class="message-date">[' + date(settings.timestring, (Date.now()/1000)) + ']</div><div class="message"> <img class="chatimage" src="'+  urls[0]+'"><div><b>File</b>: ' + removeHtml(urls[0].substr(urls[0].lastIndexOf("/") + 1)) + ' [<a href="remove:image">remove</a>]</div></div><div class="clear">&nbsp;</div></div>');
+				$("div.channel-content").append('<div class="user-message truncate"><div class="message-date">[' + date(settings.timestring, (Date.now()/1000)) + ']</div><div class="message"> <img class="chatimage" src="https://external-content.duckduckgo.com/iu/?u='+  encodeURIComponent(urls[0])+'"><div><b>File</b>: ' + removeHtml(urls[0].substr(urls[0].lastIndexOf("/") + 1)) + ' [<a href="remove:image">remove</a>]</div></div><div class="clear">&nbsp;</div></div>');
 			}
 		}
 	},

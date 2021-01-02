@@ -19,7 +19,7 @@ function parseData(e){
         
 		for(var i in jsonData){
             
-			if(logData && jsonData[i].indexOf(" 352 ") == -1) console.log(e);
+			if(logData) console.log(e);
             
 			var socketID = jsonData[i].split(" ")[0].substr(1);
 			var data = jsonData[i].substr(3);
@@ -334,6 +334,8 @@ function parseData(e){
 						burd.addChannelMessage(svr.id, "console", "console", {type: "in",  time: Date.now(), message: removeHtml(cData)},true);
 					}else{
 						var usr = parseUser(bits[0]);
+                        var chanSettings = getChannelSettings(svr.id, bits[2]);
+                        if(chanSettings.notices == false) return;
                         if(getChannelSettings(svr.id,bits[2].toLowerCase()).notices == false && bits[2].substr(0,1) == "#") return;
 						if(burd.lastServer == svr.id){
 							if(bits[2].toLowerCase() == svr.nick.toLowerCase()) bits[2] = "you";
@@ -471,6 +473,9 @@ function parseData(e){
                         
                         if(usr.nick.toLowerCase() == svr.nick.toLowerCase()){
                             burd.getChannel(svr.id, cData, "channel").users = [];
+                            var chanSettings = getChannelSettings(svr.id, cData);
+                            if(chanSettings.requestOps) send("PRIVMSG ChanServ :op " + cData);
+                            if(chanSettings.requestVoice) send("PRIVMSG ChanServ :voice " + cData);
                         }else{
                             burd.addChannelUser(svr, cData, usr.nick);
                             burd.addServerUser(svr.id, usr.nick);
@@ -478,9 +483,7 @@ function parseData(e){
 						burd.updateGuiNames(svr, cData);
 					}else{
 						var nickInfo = getUserPrefixes(usr.nick, svr);
-						
-                        
-                        
+
 						if(nickInfo.nick.toLowerCase() == svr.nick.toLowerCase()){
                             if(channelSettings[svr.id] == undefined) channelSettings[svr.id] = {};
                             if(channelSettings[svr.id][cData.toLowerCase()] == undefined){
@@ -626,6 +629,12 @@ function parseData(e){
 			}
 			
 			function checkHighlight(){
+                
+                if(bits[1] == "PRIVMSG"){
+                    var chanSettings = getChannelSettings(svr.id, bits[2]);
+                    if(chanSettings.highlights == false) return false;
+                }
+                
 				var usr = parseUser(bits[0]);
 				var rRes = false;
 				for(var i in settings.highlights){

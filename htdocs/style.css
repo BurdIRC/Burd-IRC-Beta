@@ -228,7 +228,7 @@ div#nav-pane div.counter {
 div#nav-pane div.closer {
 	float: right;
 	font-size: 0.8em;
-	background: url("images/dots-vertical.svg") no-repeat center center;
+	background: url("images/dots-vertical.svg?color=ffffff") no-repeat center center;
 	background-size: 1rem;
 	width: 1.25rem;
 	text-align: center;
@@ -394,7 +394,7 @@ div.users-list div.user-idle .usertext {
 
 div.users-list div.user .usermodes {
 	float: left;
-	font-size: 0.9em;
+	font-size: 0.75em;
 	text-align: right;
 }
 
@@ -680,7 +680,7 @@ div.quit {
 	float: right;
 	height: 100%;
 	width: 1rem;
-	background: url('images/close.svg') no-repeat center center;
+	background: url('images/close.svg?color=ffffff') no-repeat center center;
 	background-size: 1rem;
 	cursor: pointer;
 }
