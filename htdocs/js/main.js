@@ -238,7 +238,7 @@ var overlay = {
 }
 
 $(function(){
-    
+    window.resizeTo(1024,600);
     $("body").on("mousemove", function(e){
         mouse.x = e.pageX;
         mouse.y = e.pageY;
@@ -485,6 +485,29 @@ var snackbar = {
     }
 }
 
+
+function mainMenu(){
+    var svr = burd.getServer(burd.lastServer);
+    menu.show([
+        {text: "Preferences", callback: function(){
+            overlay.iframe("settings.html", {tab: "appearance"});
+        }},
+        {text: "-", callback: function(){}},
+        {text: "Network List", callback: function(){
+            overlay.iframe("networks.html", {tab: "appearance"});
+        }},
+        {text: "New Network", callback: function(){
+            overlay.iframe("newnetwork.html", {tab: "appearance"});
+        }},
+        {text: "-", callback: function(){}},
+        {text: "About", callback: function(){
+            overlay.iframe("about.html", {tab: "appearance"});
+        }}
+        
+    ]);
+}
+
+
 function showUserMenu(nick){
     var svr = burd.getServer(burd.lastServer);
     menu.show([
@@ -506,6 +529,7 @@ function showUserMenu(nick){
                     }
                 );
             }
+            $("div.nav-item[channel='" + nick.toLowerCase() + "'][type='pm']").click();
         }},
         {text: "Whois", callback: function(){
             burd.controlServer.send(JSON.stringify(
@@ -576,9 +600,13 @@ function showUserMenu(nick){
                 {text: "BAN User", callback: function(){
                     var mask = svr.users[nick].mask;
                     if(mask == ""){
-                       burd.sendLast("MODE " + burd.lastChannel.name + " +b " + nick);
+                        burd.sendLast("MODE " + burd.lastChannel.name + " +b " + nick);
                     }else{
-                       burd.sendLast("MODE " + burd.lastChannel.name + " +b *!" + mask.split("!")[1]);
+                        var bmask = settings.banmask;
+                        bmask = bmask.replace(/\%n/g, nick);
+                        bmask = bmask.replace(/\%i/g, mask.split("!")[1].split("@")[0]);
+                        bmask = bmask.replace(/\%h/g, mask.split("@")[1]);
+                        burd.sendLast("MODE " + burd.lastChannel.name + " +b *!" + bmask);
                     }
                 }},
                 {text: "BAN/KICK User", callback: function(){

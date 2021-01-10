@@ -254,13 +254,13 @@ div.svg-button {
 	height: 1.25rem;
 	width: 1.25rem;
 	cursor: pointer;
-	background: url('images/plus.svg?color=ffffff') no-repeat center center;
+	background: url('images/server-plus.svg?color=ffffff') no-repeat center center;
 	background-size: 1rem;
 	float: left;
 }
 
 div.settings-menu {
-	background-image: url('images/settings.svg?color=ffffff');
+	background-image: url('images/menu.svg?color=ffffff');
 }
 
 div.plugins-menu {
@@ -274,11 +274,11 @@ div.notes {
 }
 
 div.settings-menu:hover {
-	background-image: url('images/settings.svg?color=6491E7');
+	background-image: url('images/menu.svg?color=6491E7');
 }
 
 div.add-menu:hover {
-	background-image: url('images/plus.svg?color=6491E7');
+	background-image: url('images/server-plus.svg?color=6491E7');
 }
 
 div.plugins-menu:hover {

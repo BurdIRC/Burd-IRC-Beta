@@ -28,14 +28,6 @@ var burd = {
 		this.controlServer.onclose = function(e){
 			$("div#app").hide();
             $("div#failure").show();
-            setInterval(function(){
-                this.controlServer = new WebSocket(csUrl);
-                this.controlServer.onopen = function(e){
-                    window.location.reload();
-                };
-                this.controlServer.onclose = function(e){
-                };
-            },10000);
 		};
 		
 	},

@@ -82,6 +82,19 @@
 		<script>
 			var settings = {};
 			$(function(){
+            
+                $.getJSON( "/themes/themes.json", function( data ) {
+                    console.log(data);
+                    for(var i in data){
+                        if(data[i] == settings.theme){
+                            $("select#theme").append("<option selected=true>" + data[i] + "</option>");
+                            $("select#theme").val(data[i]);
+                        }else{
+                            $("select#theme").append("<option>" + data[i] + "</option>");
+                        }
+                    }
+                });
+            
 				window.parent.postMessage({command: "iframe-size", width: "400px", height: "500px"}, "*");
                 window.parent.postMessage({command: "get-settings"}, "*");
 				$("div.tab").on("click", function(e){
@@ -106,6 +119,7 @@
 				});
                 window.addEventListener('beforeunload', function (e) {
                     console.log("unloaded");
+                    settings.theme = $("select#theme").val();
                     window.parent.postMessage({command: "replace-settings", settings: settings}, "*");
                 });
                 $("input[type='text']").on("change", function(e){
@@ -159,7 +173,11 @@
                     <div class="checkbox" id="cmdautocomplete">Show command autocomplete</div>
                     <div class="text-input">
                         <div class="text-title">Theme:</div>
-                        <div class="ipb"><input type="text" id="theme" value=""></div>
+                        <div class="ipb">
+                            <select style="width:120px;" id="theme">
+                            </select>
+                        </div>
+                        
                         <div class="clear">&nbsp;</div>
                     </div>
                 </div>
@@ -204,7 +222,7 @@
                 <div class="caption">Operator Options</div>
                 <div class="section-content">
                     <div class="text-input">
-                        <div class="text-title">Kick mask:</div>
+                        <div class="text-title">Ban mask:</div>
                         <div class="ipb"><input type="text" id="banmask" style="width:230px;" value="*!%i@%h"></div>
                         <div class="clear">&nbsp;</div>
                     </div>

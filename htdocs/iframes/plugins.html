@@ -156,7 +156,7 @@
 
                 });
 
-                $.getJSON( "/plugins", function( data ) {
+                $.getJSON( "/plugins.json", function( data ) {
                     for(let i in data){
                         $.get( "/plugins/" + data[i], function( text ) {
                             let p = eval("(" + text + ")");

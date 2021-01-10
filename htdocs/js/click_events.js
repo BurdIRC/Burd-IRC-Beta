@@ -56,7 +56,7 @@ $(function(){
 			}}
 		]);
 		*/
-		overlay.iframe("settings.html", {tab: "appearance"});
+		mainMenu();
 	});
 	$("div.add-menu").on("click", function(e){
 		/*
@@ -76,16 +76,7 @@ $(function(){
 	});
 	
 	$("div.users").on("click", "div.user", function(e){
-        if(settings.userCards == true){
-            $("div#usercard").show(100);
-            $("div#cuser, div#ucaccount, div#ucserver, div#ucchannels").text("...");
-            $("div#ucaccount").text("Not Identified");
-            $("textarea#usernotes").val("");
-            $("div#cuser").text($(this).find("span.usertext").text());
-            sendData(burd.lastServer, "WHOIS " + $(this).attr("nick") + " " + $(this).attr("nick"));
-        }else{
-            showUserMenu($(this).attr("nick"));
-        }
+        showUserMenu($(this).find("span.usertext").text());
 	});	
 	$("div.channel-content").on("click", "span.name", function(e){
 		showUserMenu($(this).text());

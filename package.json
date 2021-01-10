@@ -1,7 +1,7 @@
 {
   "name": "BurdIRC",
   "productName": "BurdIRC",
-  "version": "0.7.2",
+  "version": "0.0.1.1",
   "main": "index.js",
   "description": "A simple IRC client",
   "scripts": {

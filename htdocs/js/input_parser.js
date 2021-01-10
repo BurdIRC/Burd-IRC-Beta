@@ -47,7 +47,9 @@ function parseInput(e,i){
 		if(isCommand){
 
 			switch(bits[0].substr(1).toUpperCase()){
-                
+                case "TEST":
+                    window.open('popup/test.html','_blank','directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,width=400,height=350,top='+(window.screenY+50)+',left=' + (window.screenX+50));
+                    break;
                 case "SPAM":
                     navigator.clipboard.readText()
                     .then(text => {
