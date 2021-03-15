@@ -114,7 +114,10 @@ const wsServer = {
                 
                 
                 setTimeout(function(){
-                    if(doClose) process.exit();
+                    if(doClose){
+                        console.log("No active connections. Closing backend...");
+                        process.exit();
+                    }
                 },2000);
                 
                 
@@ -129,7 +132,9 @@ const wsServer = {
 			
 			controls.push({ws: ws, id: 1, client: client});
 			*/
+            ws.send('v' + require('./package.json').version);
 			ws.send('o');
+            
 			//ws.send('a[":1"]');
 
 

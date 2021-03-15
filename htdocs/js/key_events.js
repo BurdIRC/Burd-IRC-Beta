@@ -1,3 +1,7 @@
+/*
+This code is released under the Mozilla Public License 2.0
+*/
+
 /* handlers for key press events */
 var inputCache = {
 	cache: [],

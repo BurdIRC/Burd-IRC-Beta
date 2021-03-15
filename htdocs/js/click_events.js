@@ -51,7 +51,19 @@ $(function(){
 			}}
 		]);
 		*/
-		overlay.iframe("settings.html", {tab: "appearance"});
+		//overlay.iframe("settings.html", {tab: "appearance"});
+		menu.show([
+			{text: "Networks", callback: function(){
+				overlay.iframe("networks.html", {tab: ""});
+			}},
+			{text: "Settings", callback: function(){
+				overlay.iframe("settings.html", {tab: "appearance"});
+			}},
+			{text: "-", callback: function(){}},
+			{text: "About", callback: function(){
+				overlay.iframe("about.html", {tab: "appearance"});
+			}}
+		]);
 	});
 	$("div.add-menu").on("click", function(e){
 		/*

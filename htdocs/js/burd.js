@@ -1,3 +1,6 @@
+/*
+This code is released under the Mozilla Public License 2.0
+*/
 var burd = {
 	socketCount: 0,
 	lastServer: "24533d5aa0",
@@ -6,7 +9,11 @@ var burd = {
 	servers: [],
 	controlServer: false,
 	connectToControl: function(){
-		this.controlServer = new WebSocket("ws://" + window.location.host + "/ws");
+        var url = new URL(window.location.href);
+        var csUrl = "ws://" + window.location.host + "/ws";
+        if(url.searchParams.get("wsport")!=null) csUrl = "ws://" + window.location.host.split(":")[0] + ":" + url.searchParams.get("wsport") + "/ws";
+        
+		this.controlServer = new WebSocket(csUrl);
 		this.controlServer.onmessage = function(e){
 			parseData(e.data);
 		};
@@ -20,6 +27,7 @@ var burd = {
 		};
 		this.controlServer.onclose = function(e){
 			$("div#app").hide();
+            $("div#failure").show();
 		};
 		
 	},
@@ -56,7 +64,8 @@ var burd = {
 		}
 
 	},
-	addServerUser: function(id,nick){
+	addServerUser: function(id,nick,host){
+        if (host == undefined) host = "";
 		var svr = this.getServer(id);
 		for(var i in svr.prefixes){
 			nick = nick.replace(svr.prefixes[i], "");
@@ -66,7 +75,7 @@ var burd = {
 			if(svr.users[nick.toLowerCase()] != undefined) return;
 		}
 
-		svr.users[nick.toLowerCase()] = {away: false, color: strToColor(nick.toLowerCase()), notes: "", mask: ""};
+		svr.users[nick.toLowerCase()] = {away: false, color: strToColor(nick.toLowerCase()), notes: "", mask: host};
 		
 		function getRandomColor() {
 			var letters = 'ABCDEF'.split('');
@@ -92,6 +101,8 @@ var burd = {
 		$("div#nav-pane div.nav-items").append('<div class="server" sid="' + s.id + '"><div class="console" channel="console" type="console"><span>' + s.name +'</span><div class="counter" num="0">0</div><div class="closer">&nbsp;</div></div><div class="items"></div></div>');
 		this.servers.push({
 			id: id,
+            whoPolling: true,
+            caps: [],
 			name: s.name,
 			nick: s.nick,
 			socket: this.socketCount,
@@ -138,7 +149,7 @@ var burd = {
 	removeChannel: function(svr, chan, type){
 		var channel = this.getChannel(svr.id,chan,type);
 		if(channel){
-			$("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + formatAttr(chan.toLowerCase()) + "']").remove();
+			$("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + formatSel(chan.toLowerCase()) + "']").remove();
 			svr.channels.splice(svr.channels.indexOf(channel),1);
 		}
 	},
@@ -220,33 +231,32 @@ var burd = {
                 
 				switch(data.type){
 					case "message":
-						uhtml = '<div class="user-message ' + (highlight ? "highlight" : "blank") + ' truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="username"> &lt;<span class="name" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">'+ data.from.split("!")[0] +'</span>&gt;</div><div class="message">&nbsp;' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="user-message ' + (highlight ? "highlight" : "blank") + ' truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="username"> &lt;<span class="name" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">'+ data.from.split("!")[0] +'</span>&gt;</div><div class="message">&nbsp;' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						updateCount();
 						break;
 					case "action":
 						uhtml = '<div class="user-message action ' + (highlight ? "highlight" : "blank") + ' truncate"><div class="message-date">[16:11:35]</div><div class="username"> * <span class="name">'+ data.from.split("!")[0] +'</span> </div><div class="message">&nbsp;' + data.message + ' *</div><div class="clear">&nbsp;</div></div>';
-						updateCount();
 						break;
 					case "left":
-						uhtml = '<div class="channel-info user-left truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon text-out">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info user-left truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon text-out">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "joined":
-						uhtml = '<div class="channel-info user-joined truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon text-in">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info user-joined truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon text-in">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "in":
-						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon text-in">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon text-in">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "out":
-						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon text-out">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon text-out">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "info":
-						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon info-default">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon info-default">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "success":
-						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon success">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon success">&nbsp;</div><div class="message">' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					case "error":
-						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date('H:i:s', (data.time/1000)) +']</div><div class="icon error-info">&nbsp;</div><div class="message">&nbsp;' + data.message + '</div><div class="clear">&nbsp;</div></div>';
+						uhtml = '<div class="channel-info truncate"><div class="message-date">[' + date(settings.timestring, (data.time/1000)) +']</div><div class="icon error-info">&nbsp;</div><div class="message">&nbsp;' + data.message + '</div><div class="clear">&nbsp;</div></div>';
 						break;
 					
 				}
@@ -265,15 +275,15 @@ var burd = {
 						$("div.server[sid='" + id + "'] div.console div.counter").attr("num", 0).text(0);
 						
 					}else{
-						$("div.server[sid='" + id + "'] div.nav-item[channel='" + chan.toLowerCase() + "'] div.counter").attr("num", 0).text(0);
+						$("div.server[sid='" + id + "'] div.nav-item[channel='" + formatSel(chan.toLowerCase()) + "'] div.counter").attr("num", 0).text(0);
 					}
 				}else{
 					if(type=="console"){
 						var num = parseInt($("div.server[sid='" + id + "'] div.console div.counter").attr("num"));
 						$("div.server[sid='" + id + "'] div.console div.counter").attr("num", num + 1).text(num + 1);
 					}else{
-						var num = parseInt($("div.server[sid='" + id + "'] div.nav-item[channel='" + chan.toLowerCase() + "'] div.counter").attr("num"));
-						$("div.server[sid='" + id + "'] div.nav-item[channel='" + chan.toLowerCase() + "'] div.counter").attr("num", num + 1).text(num + 1);
+						var num = parseInt($("div.server[sid='" + id + "'] div.nav-item[channel='" + formatSel(chan.toLowerCase()) + "'] div.counter").attr("num"));
+						$("div.server[sid='" + id + "'] div.nav-item[channel='" + formatSel(chan.toLowerCase()) + "'] div.counter").attr("num", num + 1).text(num + 1);
 					}
 				}
 			}
@@ -284,7 +294,7 @@ var burd = {
 		
 		if(add && channel) channel.content.push(data);
 		
-		if(channel && channel.content.length > 100) channel.content.splice(0,1);
+		if(channel && channel.content.length > settings.scrollback) channel.content.splice(0,1);
 		
 		if(add && isActive) $('div.channel-content').scrollTop($('div.channel-content')[0].scrollHeight);
 		
@@ -298,8 +308,7 @@ var burd = {
 		if(isActive){
 			var urls = message.match(/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])\.(png|jpg|gif)/ig);
 			if(urls != null){
-				console.log(urls[0]);
-				$("div.channel-content").append('<div class="user-message truncate"><div class="message-date">[' + date('H:i:s', (Date.now()/1000)) + ']</div><div class="message"> <img class="chatimage" src="'+  urls[0]+'"><div><b>File</b>: ' + removeHtml(urls[0].substr(urls[0].lastIndexOf("/") + 1)) + ' [<a href="remove:image">remove</a>]</div></div><div class="clear">&nbsp;</div></div>');
+				$("div.channel-content").append('<div class="user-message truncate"><div class="message-date">[' + date(settings.timestring, (Date.now()/1000)) + ']</div><div class="message"> <img class="chatimage" src="https://external-content.duckduckgo.com/iu/?u='+  encodeURIComponent(urls[0])+'"><div><b>File</b>: ' + removeHtml(urls[0].substr(urls[0].lastIndexOf("/") + 1)) + ' [<a href="remove:image">remove</a>]</div></div><div class="clear">&nbsp;</div></div>');
 			}
 		}
 	},
@@ -377,7 +386,7 @@ var burd = {
 			var uhtml = "";
 			for(var i in channel.users){
 				var ui = this.getUser(svr.id, channel.users[i][0]);
-				uhtml += '<div class="user ' + (ui.away ? "user-idle" : "" ) + '" nick="' + formatAttr(channel.users[i][0].toLowerCase()) + '"><span class="usertext" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">' + channel.users[i][0] + '</span><span class="usermodes">' + channel.users[i][1] + '</span></div>';
+				uhtml += '<div title="' + formatAttr(ui.mask) + '" class="user ' + (ui.away ? "user-idle" : "" ) + '" nick="' + formatAttr(channel.users[i][0].toLowerCase()) + '"><span class="usertext" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">' + channel.users[i][0] + '</span><span class="usermodes">' + channel.users[i][1] + '</span></div>';
 			}
 			document.getElementById("userslist").innerHTML = uhtml;
 			$("div.channel-window span.unum").text(channel.users.length);
@@ -390,8 +399,7 @@ var burd = {
 		this.lastServer = id;
 		var channel = this.getChannel(id,chan,type);
 		var uhtml = "";
-        var nitm = $("div.server[sid='" + id + "'] div.nav-item[channel='" + chan.toLowerCase() + "']");
-        
+        var nitm = $("div.server[sid='" + id + "'] div.nav-item[channel='" + formatSel(chan.toLowerCase()) + "']");
         if(type == "channel"){
             if(!nitm.hasClass("item-selected")){
                 nitm.click();
@@ -424,7 +432,7 @@ var burd = {
 				
 				for(var i in channel.users){
 					var ui = this.getUser(id, channel.users[i][0]);
-					uhtml += '<div class="user ' + (ui.away ? "user-idle" : "" ) + '" nick="' + formatAttr(channel.users[i][0].toLowerCase()) + '"><span class="usertext" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">' + channel.users[i][0] + '</span><span class="usermodes">' + channel.users[i][1] + '</span></div>';
+					uhtml += '<div title="' + formatAttr(ui.mask) + '" class="user ' + (ui.away ? "user-idle" : "" ) + '" nick="' + formatAttr(channel.users[i][0].toLowerCase()) + '"><span class="usertext" style="color:' + (settings.nickColors ? ui.color : "var(--main-nick-color)") + '">' + channel.users[i][0] + '</span><span class="usermodes">' + channel.users[i][1] + '</span></div>';
 				}
 				//$("div.users-list div.users").append(uhtml);
 				

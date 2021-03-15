@@ -254,7 +254,7 @@ div.svg-button {
 }
 
 div.settings-menu {
-	background-image: url('images/settings.svg?color=ffffff');
+	background-image: url('images/menu.svg?color=ffffff');
 }
 
 div.plugins-menu {
@@ -268,7 +268,7 @@ div.notes {
 }
 
 div.settings-menu:hover {
-	background-image: url('images/settings.svg?color=6491E7');
+	background-image: url('images/menu.svg?color=6491E7');
 }
 
 div.add-menu:hover {

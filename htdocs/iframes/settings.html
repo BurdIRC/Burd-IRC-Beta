@@ -64,7 +64,7 @@
                 overflow-y: scroll;
             }
             div.text-input{
-                margin-top:5px;
+                margin-top:10px;
             }
             div.text-input input{
                 width:120px;
@@ -82,6 +82,19 @@
 		<script>
 			var settings = {};
 			$(function(){
+            
+                $.getJSON( "/themes/themes.json", function( data ) {
+                    console.log(data);
+                    for(var i in data){
+                        if(data[i] == settings.theme){
+                            $("select#theme").append("<option selected=true>" + data[i] + "</option>");
+                            $("select#theme").val(data[i]);
+                        }else{
+                            $("select#theme").append("<option>" + data[i] + "</option>");
+                        }
+                    }
+                });
+            
 				window.parent.postMessage({command: "iframe-size", width: "400px", height: "500px"}, "*");
                 window.parent.postMessage({command: "get-settings"}, "*");
 				$("div.tab").on("click", function(e){
@@ -103,12 +116,19 @@
                         }
                     }
                     
-                    console.log($(this)[0].id);
 				});
                 window.addEventListener('beforeunload', function (e) {
                     console.log("unloaded");
+                    settings.theme = $("select#theme").val();
                     window.parent.postMessage({command: "replace-settings", settings: settings}, "*");
                 });
+                $("input[type='text']").on("change", function(e){
+                    if(settings[e.target.id] != undefined) settings[e.target.id] = $(this).val();
+                });
+                $("input[type='number']").on("change", function(e){
+                    if(settings[e.target.id] != undefined) settings[e.target.id] = $(this).val();
+                });
+                
 			})
 			
 			onArgs = function(e){
@@ -153,7 +173,11 @@
                     <div class="checkbox" id="cmdautocomplete">Show command autocomplete</div>
                     <div class="text-input">
                         <div class="text-title">Theme:</div>
-                        <div class="ipb"><input type="text" id="theme" value=""></div>
+                        <div class="ipb">
+                            <select style="width:120px;" id="theme">
+                            </select>
+                        </div>
+                        
                         <div class="clear">&nbsp;</div>
                     </div>
                 </div>
@@ -172,6 +196,7 @@
                     <div class="checkbox" id="emojis">Show emoticons</div>
                     <div class="checkbox" id="nickColors">Allow colored nicknames</div>
                     <div class="checkbox" id="textColors">Allow mIRC colors</div>
+                    <!--<div class="checkbox" id="userCards">Show user cards instead of menu</div>-->
                     
                     <div class="text-input">
                         <div class="text-title">Scrollback:</div>
@@ -197,12 +222,12 @@
                 <div class="caption">Operator Options</div>
                 <div class="section-content">
                     <div class="text-input">
-                        <div class="text-title">Default mask:</div>
-                        <div class="ipb"><input type="text" id="banmask" value="*!%i@%h"></div>
+                        <div class="text-title">Ban mask:</div>
+                        <div class="ipb"><input type="text" id="banmask" style="width:230px;" value="*!%i@%h"></div>
                         <div class="clear">&nbsp;</div>
                     </div>
                     <div class="text-input">
-                        <div class="text-title">Ban reason:</div>
+                        <div class="text-title">Kick reason:</div>
                         <div class="ipb"><input type="text" style="width:230px;" id="banreason" value="Bye"></div>
                         <div class="clear">&nbsp;</div>
                     </div>
@@ -211,9 +236,9 @@
             
             
             <div class="section">
-                <div class="caption">Lists</div>
+                <div class="caption">Misc</div>
                 <div class="section-content">
-                    <div><a href="ignorelist.html">Ignore List</a> / <a href="highlights.html">Highlights</a> / <a href="usercommands.html">User Commands</a></div>
+                    <div><a href="ignorelist.html">Ignore List</a> / <a href="highlights.html">Highlights</a> / <a href="usercommands.html">User Commands</a> / <a href="about.html">About</a></div>
                 </div>
             </div>
 

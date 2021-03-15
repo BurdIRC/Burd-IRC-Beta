@@ -1,3 +1,7 @@
+/*
+This code is released under the Mozilla Public License 2.0
+*/
+
 $(function(){
 	$("body").on("click", "div.menu-item", function(e){
 		$("div.menu-list").remove();
@@ -51,7 +55,6 @@ var menu = {
 		for(var i in this.callbacks){
 			if(this.callbacks[i] != undefined && this.callbacks[i].id == e){
 				this.callbacks[i].callback(this.callbacks[i].info);
-				console.log(this.callbacks[i]);
 			}
 		}
 	}

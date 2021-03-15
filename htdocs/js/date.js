@@ -1,3 +1,7 @@
+/*
+This code is released under the Mozilla Public License 2.0
+*/
+
 function date (format, timestamp) {
   //  discuss at: https://locutus.io/php/date/
   // original by: Carlos R. L. Rodrigues (https://www.jsfromhell.com)

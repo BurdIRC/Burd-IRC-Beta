@@ -139,8 +139,30 @@
 					$("div.selected-tab").removeClass("selected-tab");
 					$(this).addClass("selected-tab");
 				});
+                
+                $("input#unban").on("click", function(e){
+                    unban();
+                });
 			})
 			
+            function unban(){
+                var unbans = [];
+                var unbanc = [];
+                $("div.checked").each(function(e){
+                    unbanc.push($(this).find("div:first").text());
+                    if(unbanc.length == 4){
+                        unbans.push(unbanc);
+                        unbanc = [];
+                    }
+                    $(this).remove();
+                });
+                setTimeout(function(){
+                    if(unbanc != []) unbans.push(unbanc);
+                    console.log(unbans);
+                    window.parent.postMessage({command: "unban", list: unbans}, "*");
+                },100);
+            }
+            
 			onArgs = function(e){
 				$("div.title span").text(e.channel);
 				$("div.warning").text($("div.warning").text().replace("%channel", e.channel));
