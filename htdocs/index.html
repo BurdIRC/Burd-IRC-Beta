@@ -1,8 +1,8 @@
 <!DOCTYPE HTML>
 <html>
 	<head>
-		<title>BurdIRC</title>
-		<meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
+		<title>Burd IRC Beta</title>
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;0,800;1,300;1,400;1,600;1,700;1,800&display=swap" rel="stylesheet">
 		<link href="style.css" rel="stylesheet">
 		<link href="style.css" rel="stylesheet" id="theme">
@@ -22,117 +22,12 @@
 		<script src="js/commands.js"></script>
 		<script src="js/message_events.js"></script>
 		<style>
-div#usercard {
-    width: 300px;
-    background:var(--dark-bg);
-    position: absolute;
-    left: calc(100% - var(--users-list-width) - 170px);
-    top: 50%;
-    border: 1px solid var(--border-upper-color);
-    border-bottom: 1px solid var(--border-lower-color);
-    border-right: 1px solid var(--border-lower-color);
-    z-index: 1;
-    border-radius: 10px;
-    box-shadow: 3px 3px 3px rgb(0 0 0 / 0.3);
-    transform: translate(-50%, -50%);
-    display:none;
-}
-div#cuser {
-    font-size: 25px;
-    padding: 5px;
-    text-align: center;
-    font-weight: 300;
-    color: var(--light-color);
-}
-div#cmask {
-    font-size: 15px;
-    padding: 5px;
-    padding-top:0;
-    text-align: center;
-    font-weight: 300;
-}
-div#cimg {
-    text-align: center;
-    margin-top:10px;
-}
-div#cimg img{
-    border-radius:50%;
-    height:70px;
-    width:70px;
-}
-div#clowercontent{
-    background:var(--main-bg);
-    width:100%;
-    border-radius:10px;
-    border-top-right-radius:0px;
-    border-top-left-radius:0px;
-}
-div#clowercontent div.caption{
-    padding:10px;
-    font-size:14px;
-    font-weight:700;
-    color:var(--dark-color);
-    padding-bottom:0;
-    padding-top:5px;
-}
-div#clowercontent div.stext{
-    padding:10px;
-    padding-top:0;
-    font-size:15px;
-    padding-bottom:5px;
-
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-textarea#usernotes{
-    width:270px;
-    height:40px;
-    resize: none;
-}
-
+			
 		</style>
 		
 	</head>
 	<body>
 		
-        <div id="usercard" class="usercard">
-            <div id="cuser">...</div>
-            <div id="clowercontent">
-                <div class="sec">
-                    <div class="caption">HOSTMASK</div>
-                    <div class="stext" id="uchostmask">...</div>
-                </div>
-                <div class="sec">
-                    <div class="caption">ACCOUNT</div>
-                    <div class="stext" id="ucaccount">...</div>
-                </div>
-                <div class="sec">
-                    <div class="caption">SERVER</div>
-                    <div class="stext" id="ucserver">...</div>
-                </div>
-                <div class="sec">
-                    <div class="caption">CHANNELS</div>
-                    <div class="stext" id="ucchannels">...</div>
-                </div>
-                <div class="sec">
-                    <div class="caption">ACTIONS</div>
-                    <div class="stext" id="ucactions"><a href="xpm://">PM</a> <a href="xignore://">Ignore</a> <a href="xkick://">Kick</a> <a href="xop://">OP</a> <a href="xdeop://">Deop</a> <a href="xvoice://">Voice</a> <a href="xdevoice://">Devoice</a> <a href="xban://">Ban</a> <a href="xversion://">Version</a></div>
-                </div>
-                <div class="sec">
-                    <div class="caption">NOTES</div>
-                    <div class="stext" id="ucnotes">
-                        <textarea id="usernotes"></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div id="failure">
-            <div style="font-size:30px;padding-top:20px;text-align:center;"><img style="height:200px;" src="images/sad.png"></div>
-            <div style="font-size:30px;padding-top:20px;text-align:center;">BurdIRC has crashed</div>
-            <div style="font-size:17px;padding-top:20px;text-align:center;">The app has been stopped due to a failure with the backend. Please restart the app.</div>
-        </div>
-        
 		<div id="app">
             <div id="snackbar">
                 <div class="snack-content">
@@ -201,10 +96,10 @@ textarea#usernotes{
 					<div class="svg-button settings-menu" title="Settings...">
 						&nbsp;
 					</div>
-					<div style="display:none;" class="svg-button add-menu" title="Networks..." onclick="">
+					<div class="svg-button add-menu" title="Networks..." onclick="">
 						&nbsp;
 					</div>
- 					<div style="display:none;" class="svg-button plugins-menu" title="Plugins..." onclick="">
+ 					<div class="svg-button plugins-menu" title="Plugins..." onclick="">
 						&nbsp;
 					</div>
 				</div>
@@ -296,9 +191,10 @@ textarea#usernotes{
 								</div>
 						</div>
 						<div id="ccoms"></div>
-						<input type="text" class="input-box" style="margin-right:5px;">
-						<!--<input type="button" class="emoji-button" style="margin-right:5px;" value=" ">
-						<input type="button" class="insert-button" style="margin-right:5px;" value=" ">-->
+						<input type="text" class="input-box">
+						<input type="button" class="send-button" value=" ">
+						<input type="button" class="emoji-button" value=" ">
+						<input type="button" class="insert-button" value=" ">
 					</div>
 				</div>
 				

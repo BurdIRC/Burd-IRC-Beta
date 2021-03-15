@@ -1,25 +1,18 @@
-/*
-This code is released under the Mozilla Public License 2.0
-*/
-
 var logData = false;
 
 var rateLimit = 0;
 
-var capTimer = 0;
-
 function parseData(e){
-	updateServers = true;
+	
 	if(e.substr(0,1) == "o"){
-    }else if(e.substr(0,1) == "v"){
-        version = e.substr(1);
+		console.log("connected to websocket");
 	}else if(e.substr(0,1) == "a"){
 		//json data
 		var jsonData = JSON.parse(e.substr(1));
         
 		for(var i in jsonData){
             
-			if(logData) console.log(e);
+			if(logData && jsonData[i].indexOf(" 352 ") == -1) console.log(e);
             
 			var socketID = jsonData[i].split(" ")[0].substr(1);
 			var data = jsonData[i].substr(3);
@@ -35,22 +28,15 @@ function parseData(e){
 			if(jsonData[i].length == 2){
 				
 				if(data == ""){
-                        console.log(info.auth.type);
-                        if(info.auth.type == "SASL External"){
-                            send("SASL " + info.server + ":" + (info.ssl ? "+"+info.port : info.port) + " " + svr.name);
-                        }else{
-                            send("HOST " + info.server + ":" + (info.ssl ? "+"+info.port : info.port));
-                        }
+						send("HOST " + info.server + ":" + (info.ssl ? "+"+info.port : info.port));
 						send("ENCODING utf8");
 						send("CAP LS 302");
 						send("NICK " + svr.nick);
-						send("USER " + svr.nick + " 0 * https://burdirc.haxed.net/");
+						send("USER " + svr.nick + " 0 * https://burdirc.com/");
 				}
 				return;
 			}
 			
-            iplugin.contentWindow.postMessage({command: "event", event: "onData", network: svr.name, sID: svr.id, data: data},"*");
-            
 			switch(ubits[0]){
 				case "PING":
 					send("PONG :" + cData);
@@ -125,13 +111,8 @@ function parseData(e){
 					var names = svr.cache.substr(1).replace(/\s\s/g, " ").replace(/\s$/g, "").split(" ");
 					var c = burd.getChannel(svr.id, bits[3], "channel");
 					for(var i in names){
-                        var info = names[i].split("!");
-						var nickInfo = getUserPrefixes(info[0], svr);
-                        if(info.length == 1){
-                            burd.addServerUser(svr.id, nickInfo.nick);
-                        }else{
-                            burd.addServerUser(svr.id, nickInfo.nick, nickInfo.nick + "!" + info[1]);
-                        }
+						var nickInfo = getUserPrefixes(names[i], svr);
+						burd.addServerUser(svr.id, nickInfo.nick);
 						c.users.push([nickInfo.nick, nickInfo.prefixes.join("")]);
 					}
 					burd.sortUsers(c, svr);
@@ -141,57 +122,32 @@ function parseData(e){
 					
 					
 				case E.RPL_WHOISUSER:
-                    if($("div#usercard:visible").length>0){
-                        $("div#uchostmask").text(bits[3] + "!" + bits[4] + "@" + bits[5]);
-                    }else{
-                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> (" + bits[4] + "@" + bits[5] + "): <span class=whois2>" + removeHtml(cData) + "</span>"},true);
-					}
-                    break;
+					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> (" + bits[4] + "@" + bits[5] + "): <span class=whois2>" + removeHtml(cData) + "</span>"},true);
+					break;
 					
 				case E.RPL_WHOISCHANNELS:
-                    if($("div#usercard:visible").length>0){
-                        $("div#ucchannels").text(cData);
-                    }else{
-                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> " + removeHtml(cData)},true);
-					}
-                    break;
+					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> " + removeHtml(cData)},true);
+					break;
 					
 				case E.RPL_WHOISSERVER:
-                    if($("div#usercard:visible").length>0){
-                         $("div#ucserver").text(bits[4]);
-                    }else{
-                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> <span class=whois3>" + removeHtml(bits[4]) + " :" + removeHtml(cData) + "</span>"},true);
-					}
-                    break;		
+					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> <span class=whois3>" + removeHtml(bits[4]) + " :" + removeHtml(cData) + "</span>"},true);
+					break;		
 					
 				case E.RPL_WHOISSECURE:
-                    if($("div#usercard:visible").length>0){
-                    }else{
-                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> " + removeHtml(cData)},true);
-					}
-                    break;		
+					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> " + removeHtml(cData)},true);
+					break;		
 					
 				case E.RPL_WHOISACCOUNT:
-                    if($("div#usercard:visible").length>0){
-                        $("div#ucaccount").text(bits[4]);
-                    }else{
-                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> is logged in as " + removeHtml(bits[4])},true);
-					}
-                    break;
+					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> is logged in as " + removeHtml(bits[4])},true);
+					break;
 				
 				case E.RPL_WHOISIDLE:
-					if($("div#usercard:visible").length>0){
-                    }else{
-                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> seconds idle: " + bits[4] + ", Signed on: " + timeConverter(parseInt(bits[5]) * 1000)},true);
-					}
-                    break;
+					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> seconds idle: " + bits[4] + ", Signed on: " + timeConverter(parseInt(bits[5]) * 1000)},true);
+					break;
 					
 				case E.RPL_ENDOFWHOIS:
-                    if($("div#usercard:visible").length>0){
-                    }else{
-                        burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> End of WHOIS"},true);
-					}
-                    break;
+					burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "in",  time: Date.now(), message: "<b class=whois>[" + removeHtml(bits[3]) + "]</b> End of WHOIS"},true);
+					break;
                 case E.RPL_ENDOFWHO:
                     svr.lastWho = Date.now();
                     break;
@@ -261,52 +217,23 @@ function parseData(e){
 					
 				/* -------------------------------------------- */	
 				
-                case "AWAY":
-                    var nick = parseUser(bits[0]).nick;
-                    if(bits.length > 2){
-                        //they are away
-                        if(svr.users[nick.toLowerCase()] != undefined){
-                            svr.users[nick.toLowerCase()].away = true;
-                            if(svr.id == burd.lastServer){
-                                $("div.user[nick='" + nick.toLowerCase() + "']").addClass("user-idle");
-                            }
-                        }
-                    }else{
-                        if(svr.users[nick.toLowerCase()] != undefined){
-                            svr.users[nick.toLowerCase()].away = false;
-                            if(svr.id == burd.lastServer){
-                                $("div.user[nick='" + nick.toLowerCase() + "']").removeClass("user-idle");
-                            }
-                        }
-                    }
-                    break;
-                
-                
 				case "CAP":
 					switch(ubits[3]){
 						case "LS":
-                        case "NEW":
-							var mycaps = ["multi-prefix", "away-notify", "cap-notify", "extended-join", "userhost-in-names"];
+							var mycaps = ["multi-prefix"];
+							var capsfound = [];
 							var scaps = cData.split(" ");
-                            console.log(cData);
+                            
                             if(info.auth.type == "SASL Plain") mycaps.push("sasl");
                             
 							for(var i in scaps){
-								if(mycaps.includes(scaps[i])) svr.caps.push(scaps[i]);
+								if(mycaps.includes(scaps[i])) capsfound.push(scaps[i]);
 							}
-                            
-                            clearTimeout(capTimer);
-                            capTimer = setTimeout(function(){
-                            
-                                if(svr.caps.length == 0){
-                                    send("CAP END");
-                                }else{
-                                    send("CAP REQ :" + svr.caps.join(" "));
-                                    if(svr.caps.includes("away-notify")) svr.whoPolling = false;
-                                }
-                            
-                            }, 1000);
-                            
+							if(capsfound.length == 0){
+								send("CAP END");
+							}else{
+								send("CAP REQ :" + capsfound.join(" "));
+							}
 							break;
 						case "ACK":
                             if(info.auth.type == "SASL Plain"){
@@ -326,6 +253,7 @@ function parseData(e){
 					break;
                     
                 case "CLOSED":
+                    console.log("closed");
                     burd.addGlobalMessage(svr.id, {type: "error",  time: Date.now(), message: "You're no longer connected to this network!"});
                     break;
 					
@@ -334,16 +262,13 @@ function parseData(e){
 						burd.addChannelMessage(svr.id, "console", "console", {type: "in",  time: Date.now(), message: removeHtml(cData)},true);
 					}else{
 						var usr = parseUser(bits[0]);
-                        var chanSettings = getChannelSettings(svr.id, bits[2]);
-                        if(chanSettings.notices == false) return;
-                        if(getChannelSettings(svr.id,bits[2].toLowerCase()).notices == false && bits[2].substr(0,1) == "#") return;
+                        if(getChannelSettings[svr.id][bits[2].toLowerCase()].notices == false && bits[2].substr(0,1) == "#") return;
 						if(burd.lastServer == svr.id){
 							if(bits[2].toLowerCase() == svr.nick.toLowerCase()) bits[2] = "you";
 							burd.addChannelMessage(svr.id, burd.lastChannel.name, burd.lastChannel.type, {type: "info",  time: Date.now(), message: "<b>" + removeHtml(usr.nick) + "</b> sent a notice to <b>" + removeHtml(bits[2]) + "</b>: " + colors.parse(linkify(removeHtml(cData)))},true);
 						}else{
 							burd.addChannelMessage(svr.id, "console", "console", {type: "info",  time: Date.now(), message: "<b>" + removeHtml(usr.nick) + "</b> sent a notice to <b>" + removeHtml(bits[2]) + "</b>: " + colors.parse(linkify(removeHtml(cData)))},true);
 						}
-                        sounds.play("notice");
 					}
 					break;
 				
@@ -387,7 +312,7 @@ function parseData(e){
 					break;
 				
 				case "PRIVMSG":
-					if(ignore.test(data)) return;
+					if(ignore.test(data)) return console.log("ignored");
 					var usr = parseUser(bits[0]);
                     
                     iplugin.contentWindow.postMessage({command: "event", event: "onPrivMsg", network: svr.name, sID: svr.id, channel: bits[2], user: usr, message: cData},"*");
@@ -464,18 +389,15 @@ function parseData(e){
                     
 				case "JOIN":
 					var usr = parseUser(bits[0]);
-                    if(bits.length > 3) cData = bits[2];
                     iplugin.contentWindow.postMessage({command: "event", event: "onJoin", network: svr.name, sID: svr.id, channel: cData, user: usr},"*");
                     if(svr.users[usr.nick.toLowerCase()] != undefined) svr.users[usr.nick.toLowerCase()].mask = usr.mask;
-					if($("div.server[sid='" + svr.id + "'] div.items div.nav-item[channel='" + formatSel(cData.toLowerCase()) + "']").length > 0){
-                    
+					if($("div.server[sid='" + svr.id + "'] div.items div.nav-item[channel='" + removeHtml(cData.toLowerCase()) + "']").length > 0){
+
 						if(getChannelSettings(svr.id, cData.toLowerCase()).joinMessages) burd.addChannelMessage(svr.id, cData, "channel", {type: "in",  time: Date.now(), message: "<b>" + removeHtml(usr.nick) + "</b> (" + removeHtml(usr.mask) + ") has joined"},true);
                         
                         if(usr.nick.toLowerCase() == svr.nick.toLowerCase()){
                             burd.getChannel(svr.id, cData, "channel").users = [];
-                            var chanSettings = getChannelSettings(svr.id, cData);
-                            if(chanSettings.requestOps) send("PRIVMSG ChanServ :op " + cData);
-                            if(chanSettings.requestVoice) send("PRIVMSG ChanServ :voice " + cData);
+                            console.log("clear users");
                         }else{
                             burd.addChannelUser(svr, cData, usr.nick);
                             burd.addServerUser(svr.id, usr.nick);
@@ -483,7 +405,9 @@ function parseData(e){
 						burd.updateGuiNames(svr, cData);
 					}else{
 						var nickInfo = getUserPrefixes(usr.nick, svr);
-
+						
+                        
+                        
 						if(nickInfo.nick.toLowerCase() == svr.nick.toLowerCase()){
                             if(channelSettings[svr.id] == undefined) channelSettings[svr.id] = {};
                             if(channelSettings[svr.id][cData.toLowerCase()] == undefined){
@@ -504,9 +428,8 @@ function parseData(e){
                             if(getChannelSettings(svr.id, cData.toLowerCase()).requestOps) send("CHANSERV OP " + cData);
                             if(getChannelSettings(svr.id, cData.toLowerCase()).requestVoice) send("CHANSERV VOICE " + cData);
                             
-                            svr.whoPollList.unshift(cData.toLowerCase());
+							$("div.server[sid='" + svr.id + "'] div.items").append('<div class="nav-item" channel="'+ removeHtml(cData.toLowerCase()) +'" type="channel"><div class="item-name">' + removeHtml(cData) + '</div><div class="counter" num="0">0</div><div class="closer">&nbsp;</div></div>');
                             
-							$("div.server[sid='" + svr.id + "'] div.items").append('<div class="nav-item" channel="'+ formatAttr(cData.toLowerCase()) +'" type="channel"><div class="item-name">' + removeHtml(cData) + '</div><div class="counter" num="0">0</div><div class="closer">&nbsp;</div></div>');
 							svr.channels.push(
 								{
 									channel: cData,
@@ -524,7 +447,6 @@ function parseData(e){
                                 clearTimeout(joinTimer);
                                 joinTimer = setTimeout(function(){
                                     burd.showChannel(svr.id, cData, "channel");
-                                    burd.updateGuiNames(svr, cData);
                                 }, 500);
                             }
 						}
@@ -600,7 +522,7 @@ function parseData(e){
                     }
                 }
 				burd.sortUsers(channel, svr);
-                $("div.server[sid='" + svr.id + "'] div.item-selected[channel='" + formatSel(channel.channel.toLowerCase()) + "']").click();
+                $("div.server[sid='" + svr.id + "'] div.item-selected[channel='" + formatAttr(channel.channel.toLowerCase()) + "']").click();
 			}
 			
 			
@@ -612,7 +534,6 @@ function parseData(e){
 					switch(parts[0].toUpperCase()){
 						case "ACTION":
 							burd.addChannelMessage(svr.id, bits[2], "channel", {type: "action", time: Date.now(), from: usr.mask, message: colors.parse(linkify(removeHtml(cData.substr(7))))},true);
-                            checkHighlight();
                             return;
 							break;
                         case "VERSION":
@@ -629,12 +550,6 @@ function parseData(e){
 			}
 			
 			function checkHighlight(){
-                
-                if(bits[1] == "PRIVMSG"){
-                    var chanSettings = getChannelSettings(svr.id, bits[2]);
-                    if(chanSettings.highlights == false) return false;
-                }
-                
 				var usr = parseUser(bits[0]);
 				var rRes = false;
 				for(var i in settings.highlights){
@@ -642,13 +557,12 @@ function parseData(e){
 					if(settings.highlights[i] == "%n" && cData.toLowerCase().indexOf(svr.nick.toLowerCase()) > -1) rRes = true;
 				}
 				if(rRes){
-					var itm = $("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + formatSel(bits[2].toLowerCase()) + "']");
+					var itm = $("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + bits[2].toLowerCase() + "']");
 					if(itm){
 						sounds.play("alert");
-						if(!itm.hasClass("item-selected")) $("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + formatSel(bits[2].toLowerCase()) + "']").addClass("item-bell");
+						if(!itm.hasClass("item-selected")) $("div.server[sid='" + svr.id + "'] div.nav-item[channel='" + bits[2].toLowerCase() + "']").addClass("item-bell");
 					}
 				}
-                if(rRes) sounds.play("highlight");
 				return rRes;
 			}
 			

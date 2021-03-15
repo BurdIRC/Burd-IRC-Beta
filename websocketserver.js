@@ -1,13 +1,7 @@
-/*
-This code is released under the Mozilla Public License 2.0
-*/
-
 const WebSocket = require('ws');
 const net = require('net');
 const tls = require('tls');
 const controls = [];
-const pjson = require('./package.json');
-const fs = require('fs');
 
 let doClose = false;
 
@@ -24,9 +18,7 @@ const wsServer = {
 		wsServer.wss.handleUpgrade(request, socket, head, function connection(ws) {
 			console.log("New websocket connection");
             doClose = false;
-            ws.send('v' + pjson.version);
 			ws.on('message', function incoming(message) {
-
                 try{
                     const j = JSON.parse(message);
                     for(let i in j){
@@ -34,6 +26,7 @@ const wsServer = {
                             let data = j[i].substr(1);
                             const bits = data.split(" ");
                             const ubits = data.toUpperCase().split(" ");
+                            console.log("Data: " + data);
                             if(data.match(/^([1-9])$/ig) != null){
                                 ws.send('a[":' + data + '"]');
                                 controls.push({ws: ws, id: parseInt(bits[0]), client: false, cache: [], data: ""});
@@ -47,37 +40,19 @@ const wsServer = {
                                         }else{
                                             switch(bits[1]){
                                                 case "HOST":
-                                                case "SASL":
                                                     if(control.client) return; /* do not accept HOST for a control already connected */
-                                                    console.log(bits);
-                                                    const host = (bits[2].substr(0,bits[2].lastIndexOf(":")) + "|" + bits[2].substr(bits[2].lastIndexOf(":") + 1)).split("|");
+                                                    const host = bits[2].split(":");
                                                     let client = new net.Socket();
                                                     if(host[1].substr(0,1) == "+"){
                                                         /* port starts with + so it's ssl */
-                                                        if(bits[1] == "SASL"){
-                                                            
-                                                            /* The user is connecting with SASL External, so we must use the certificate associated with the server */
-                                                            const certPath = "certs/" + bits[3];
-                                                            if (!fs.existsSync(certPath + ".crt") || !fs.existsSync(certPath + ".key")) return console.log("No certificate for the network " + bits[3] + " was found!");
-                                                            console.log("Connecting using SASL External");
-                                                            client = tls.connect({key: fs.readFileSync("certs/example.key"), cert: fs.readFileSync("certs/example.crt"), requestCert:true, port:host[1].substr(1), host: host[0], rejectUnauthorized: false}, function() {
-                                                                ws.send('a[":' + control.id + ' control connected"]');
-                                                                control.client = client;
-                                                                for(let z in control.cache){
-                                                                    control.client.write(control.cache[z] + "\r\n");
-                                                                }
-                                                                control.cache = [];
-                                                            });
-                                                        }else{
-                                                            client = tls.connect({port:host[1].substr(1), host: host[0], rejectUnauthorized: false}, function() {
-                                                                ws.send('a[":' + control.id + ' control connected"]');
-                                                                control.client = client;
-                                                                for(let z in control.cache){
-                                                                    control.client.write(control.cache[z] + "\r\n");
-                                                                }
-                                                                control.cache = [];
-                                                            });
-                                                        }
+                                                        client = tls.connect({port:host[1].substr(1), host: host[0], rejectUnauthorized: false}, function() {
+                                                            ws.send('a[":' + control.id + ' control connected"]');
+                                                            control.client = client;
+                                                            for(let z in control.cache){
+                                                                control.client.write(control.cache[z] + "\r\n");
+                                                            }
+                                                            control.cache = [];
+                                                        });
                                                         console.log("SSL Connection");
                                                     }else{
                                                         client.connect(host[1], host[0], function() {
@@ -90,19 +65,15 @@ const wsServer = {
                                                         });
                                                     }
                                                     client.on('data', function(data) {
-                                                        const hex = data.toString('hex');
                                                         data = data.toString().replace(/\r/g, "");
                                                         control.data = control.data + data;
                                                         if(control.data.slice(-1) == "\n"){
                                                             const parts = control.data.split("\n");
                                                             for(let i in parts){
-                                                               if(parts[i].length > 0){
-                                                                   ws.send("a" + JSON.stringify([":" + control.id + " " + parts[i]]));
-                                                               }
+                                                               if(parts[i].length > 0) ws.send("a" + JSON.stringify([":" + control.id + " " + parts[i]]));
                                                             }
                                                             control.data = "";
                                                         }
-                                                        ws.send("a" + JSON.stringify([":" + control.id + " HEX " + hex]));
                                                     });
                                                     client.on('close', function() {
                                                         console.log('Connection closed');
@@ -121,11 +92,6 @@ const wsServer = {
                                         }
                                     }
                                 }
-                            }
-                        }else{
-                            console.log(j[i]);
-                            if(j[i] == "CLOSED"){
-                                process.exit();
                             }
                         }
                     }
@@ -148,7 +114,7 @@ const wsServer = {
                 
                 
                 setTimeout(function(){
-                    //if(doClose) process.exit();
+                    if(doClose) process.exit();
                 },2000);
                 
                 

@@ -5,7 +5,7 @@
 		<link href="https://fonts.googleapis.com/css?family=Montserrat:300i,400,600,600i,900,900i&display=swap" rel="stylesheet">
 		<link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-		<script src="iframe.js"></script>
+		
 		<link href="../style.css" rel="stylesheet">
 		<style>
 			div.title{
@@ -34,11 +34,6 @@
 				float:right;
 				width:440px;
 			}
-            body{
-                background: url("../images/duck.png") no-repeat;
-                background-size:700px;
-                background-position: right;
-            }
 		</style>
 		
 		<script>
@@ -52,7 +47,6 @@
 					window.parent.postMessage({command: "show-main-iframe"}, "*");
 				},100);
 				window.parent.postMessage({command: "iframe-size", width: "600px", height: "400px"}, "*");
-				window.parent.postMessage({command: "get-version"}, "*");
 				$("div.tab").on("click", function(e){
 					$("div.selected-tab").removeClass("selected-tab");
 					$(this).addClass("selected-tab");
@@ -79,23 +73,10 @@
 					});
 				});
 			}
-            window.addEventListener("message", function(e){
-                switch(e.data.command){
-                    case "version":
-                        $("span#ver").text(e.data.version);
-                        break;
-                }
-            });
 		</script>
 	</head>
 	<body>
-		<div class="title">About BurdIRC<div class="quit">&nbsp;</div></div>
-        <div style="width:300px;">
-        <div style="padding:20px;font-size:20px;">BurdIRC <span id="ver">0.0.0</span></div>
-        <div style="padding:20px;padding-bottom:5px;">Created by Matt (haxed.net)</div>
-        <div style="padding:20px;padding-bottom:5px;">This is free-and-open-source software</div>
-        <div style="padding:20px;padding-bottom:5px;">All code written for this project is released under the Mozilla Public License 2.0</div>
-        <div style="padding:20px;padding-bottom:5px;">All third party code used in this project retains it's respective license</div>
+		<div class="title">$about</div>
 		</div>
 	</body>
 </html>

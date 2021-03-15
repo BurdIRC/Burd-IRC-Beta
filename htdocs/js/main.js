@@ -1,9 +1,5 @@
-/*
-This code is released under the Mozilla Public License 2.0
-*/
-
-var version = "0.0.0";
-var title = "BurdIRC";
+var version = "0.7.0";
+var title = "Burd IRC Beta";
 var guiAccess = Date.now(); /* This is set to the last time the GUI was access (Date.now()) */
 var joinTimer = 0;
 var fileInput = {
@@ -17,7 +13,7 @@ var fileInput = {
         model.append('file', $('#file-input')[0].files[0]);
 
         $.ajax({
-            url: 'https://media.haxed.net/?burdirc=1',
+            url: 'https://burdirc.haxed.net/media',
             type: 'POST',
             dataType: 'json',
             data: model,
@@ -46,7 +42,6 @@ var settings = {
     banreason: "Bye",
 	theme: "default.css",
     highlights: ["testword123", "%n"],
-    plugins: [],
     ignores: [
         {ignore: "test123", type: "string", date: 1584689622901},
         {ignore: "^duckz$", type: "regex", date: 1584689622901}
@@ -54,7 +49,7 @@ var settings = {
     sounds: {
         alert: ["state-change_confirm-down.ogg", true],
         newPM: ["hero_simple-celebration-03.ogg", true],
-        notice: ["notification_simple-01.ogg", true],
+        notice: ["navigation_hover-tap.ogg", true],
         privmsg: ["navigation_forward-selection-minimal.ogg", false],
         highlight: ["notification_decorative-02.ogg", true],
         error: ["alert_error-03.ogg", true]
@@ -82,20 +77,14 @@ var settings = {
         ["wii","whois %2 %2"],
         ["p","part"],
         ["leave","part"],
+        ["ns","msg nickserv"],
         ["c","clear"],
-        ["ni","msg nickserv identify &2"],
-        ["ns","nickserv &2"],
-        ["cs","chanserv &2"]
+        ["ni","msg nickserv identify &2"]
     ],
     networks:[
     
-    ],
-    userCards: false,
-    spamTimer: 3000
+    ]
 };
-
-
-
 
 var channelSettings = {
     "default": {
@@ -238,7 +227,7 @@ var overlay = {
 }
 
 $(function(){
-    window.resizeTo(1024,600);
+    
     $("body").on("mousemove", function(e){
         mouse.x = e.pageX;
         mouse.y = e.pageY;
@@ -485,29 +474,6 @@ var snackbar = {
     }
 }
 
-
-function mainMenu(){
-    var svr = burd.getServer(burd.lastServer);
-    menu.show([
-        {text: "Preferences", callback: function(){
-            overlay.iframe("settings.html", {tab: "appearance"});
-        }},
-        {text: "-", callback: function(){}},
-        {text: "Network List", callback: function(){
-            overlay.iframe("networks.html", {tab: "appearance"});
-        }},
-        {text: "New Network", callback: function(){
-            overlay.iframe("newnetwork.html", {tab: "appearance"});
-        }},
-        {text: "-", callback: function(){}},
-        {text: "About", callback: function(){
-            overlay.iframe("about.html", {tab: "appearance"});
-        }}
-        
-    ]);
-}
-
-
 function showUserMenu(nick){
     var svr = burd.getServer(burd.lastServer);
     menu.show([
@@ -529,7 +495,6 @@ function showUserMenu(nick){
                     }
                 );
             }
-            $("div.nav-item[channel='" + nick.toLowerCase() + "'][type='pm']").click();
         }},
         {text: "Whois", callback: function(){
             burd.controlServer.send(JSON.stringify(
@@ -595,18 +560,14 @@ function showUserMenu(nick){
                 }},
                 {text: "-"},
                 {text: "KICK User", callback: function(){
-                    burd.sendLast("KICK " + burd.lastChannel.name + " " + nick + " :" + settings.banreason);
+                    burd.sendLast("KICK " + burd.lastChannel.name + " " + nick);
                 }},
                 {text: "BAN User", callback: function(){
                     var mask = svr.users[nick].mask;
                     if(mask == ""){
-                        burd.sendLast("MODE " + burd.lastChannel.name + " +b " + nick);
+                       burd.sendLast("MODE " + burd.lastChannel.name + " +b " + nick);
                     }else{
-                        var bmask = settings.banmask;
-                        bmask = bmask.replace(/\%n/g, nick);
-                        bmask = bmask.replace(/\%i/g, mask.split("!")[1].split("@")[0]);
-                        bmask = bmask.replace(/\%h/g, mask.split("@")[1]);
-                        burd.sendLast("MODE " + burd.lastChannel.name + " +b *!" + bmask);
+                       burd.sendLast("MODE " + burd.lastChannel.name + " +b *!" + mask.split("!")[1]);
                     }
                 }},
                 {text: "BAN/KICK User", callback: function(){
@@ -616,7 +577,7 @@ function showUserMenu(nick){
                     }else{
                        burd.sendLast("MODE " + burd.lastChannel.name + " +b *!" + mask.split("!")[1]);
                     }
-                    burd.sendLast("KICK " + burd.lastChannel.name + " " + nick + " :" + settings.banreason);
+                    burd.sendLast("KICK " + burd.lastChannel.name + " " + nick);
                 }}
             ]);
         }}
@@ -647,16 +608,9 @@ function linkify(e) {
 }
 
 function formatAttr(e){
-    //e = e.replace(/\'/g, "&rdquo;");
-    if(e==undefined) return "";
-    e = e.replace(/\"/g, '&quot;');
+    e = e.replace(/\'/g, "&rdquo;");
+    e = e.replace(/\"/g, '&rsquo;');
     e = e.replace(/\\/g, "&bsol;");
-    return e;
-}
-function formatSel(e){
-    //e = e.replace(/\'/g, "&rdquo;");
-    e = e.replace(/\\/g, "\\\\");
-    e = e.replace(/\"/g, '\\"');
     return e;
 }
 
@@ -706,11 +660,3 @@ function strToColor(str) {
 function removeHtml(e){
 	return e.replace(/\&/g, "&amp;").replace(/\</g, "&lt;");
 }
-
-var updateServers = true;
-setInterval(function(){
-    if(updateServers){
-        iplugin.contentWindow.postMessage({command: "servers", servers: burd.servers},"*");
-        updateServers = false;
-    }
-},3000);

@@ -1,7 +1,3 @@
-/*
-This code is released under the Mozilla Public License 2.0
-*/
-
 const fs = require('fs');
 const http = require('http');
 const https = require('https');

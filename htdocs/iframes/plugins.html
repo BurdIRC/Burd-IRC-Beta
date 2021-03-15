@@ -44,7 +44,7 @@
 				padding-bottom:5px;
 			}
 			a{
-				color:#a6adbd;
+				color:white;
 			}
             div.options{
                 height: calc(100% - 40px);
@@ -112,85 +112,53 @@
 		</style>
 		
 		<script>
-            var servers = {};
             var server = function(sid){
-                var svr = false;
-                for(var i in burd.servers){
-                    if(burd.servers[i].id == sid) svr = burd.servers[i];
-                }
                 return {
                     addMessage: function(channel, message){
                         /* *=current channel */
                         window.parent.postMessage({command: "add-message", server: sid, channel: channel, message: message}, "*");
-                    },
-                    sendData: function(e){
-                        window.parent.postMessage({command: "send-data", server: sid, data: e}, "*");
-                    },
-                    channel: function(e){
-                        if(!svr) return false;
-                        for(var i in svr.channels){
-                            if(svr.channels[i].channel.toLowerCase() == e.toLowerCase()){
-                                return svr.channels[i];
-                            }
-                        }
-                        return false;
                     }
                 }
             }
-            
-            var burd = window.parent.burd;
-            
-            var plugins = [];
-            
-
+            var plugins = [
+                {
+                    id: "ffac0e529fed45a08bfa943d4c053c5b",
+                    name: "My Test Plugin",
+                    version: "1.0.0",
+                    enabled: true,
+                    onPrivMsg: function(e){
+                        if(e.message == "test") server(e.sID).addMessage("*", "someone said test");
+                    },
+                    onPart: function(e){
+                    },
+                    onQuit: function(e){
+                    },
+                    onJoin: function(e){
+                    },
+                    onKick: function(e){
+                    },
+                    onData: function(e){
+                    }
+                    
+                    
+                }
+            ];
+        
 			$(function(){
-
-                $("body").on("click", "div.prem", function(e){
-                    var sid = $(this).parent().attr("sid");
+                setTimeout(function(){
                     for(var i in plugins){
-                        if(plugins[i].id == sid){
-                            window.parent.postMessage({command: "remove-plugin", index: i}, "*");
-                        }
+                        $("div.plist").append('<div class="plugin" sid=' + plugins[i].id + '><div class="ptext">' + plugins[i].name + '</div><div class="prem">remove</div></div>');
                     }
-
-
-                });
-
-                $.getJSON( "/plugins.json", function( data ) {
-                    for(let i in data){
-                        $.get( "/plugins/" + data[i], function( text ) {
-                            let p = eval("(" + text + ")");
-                            let np = new p();
-                            np.enabled = true;
-                            plugins.push(np);
-                        });
-                    }
-                });
-                
-                
+                },1000);
 			})
 			
-            function addPlugins(){
-
-            }
-            
 			onArgs = function(e){
 
 			}
             
             function runFunc(f,e){
                 for(var i in plugins){
-                    if(f == "onData"){
-                        if(plugins[i].enabled && plugins[i][f] != undefined){
-                            plugins[i][f](e);
-                        }else{
-                            
-                        }
-                    }else{
-                        if(plugins[i].enabled && plugins[i][f] != undefined){
-                            plugins[i][f](e);
-                        }
-                    }
+                    if(plugins[i].enabled && plugins[i][f] != undefined) plugins[i][f](e);
                 }
             }
 
@@ -199,27 +167,18 @@
                     case "event":
                         runFunc(e.data.event,e.data);
                         break;
-                    case "servers":
-                        servers = e.data.servers;
-                        break;
                 }
             }, false);
-
-            function genID(){
-                return 'xxxxxxxxxxxxxxx'.replace(/x/g, function(c) {
-                        var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-                        return v.toString(16);
-                    });
-            }
+			
 		</script>
 	</head>
 	<body>
 		<div class="title"><span>Plugins</span> <div class="quit">&nbsp;</div></div>
+        <div style="margin-bottom:5px;">
+            This section is not functional yet
+        </div>
         <div class="plist">
 
-        </div>
-        <div style="padding:5px;">
-            <a onclick="window.open('https://burdirc.haxed.net/plugins.html');return false;" href="https://burdirc.haxed.net/plugins.html">Plugin Docs</a>
         </div>
 	</body>
 </html>
