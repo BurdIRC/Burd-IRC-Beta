@@ -42,6 +42,7 @@ var settings = {
     scrollback: 100,
     timestring: "H:i:s",
     muted: false,
+    whoPollInterval: 1000,
     banmask: "*!%i@%h",
     banreason: "Bye",
 	theme: "default.css",

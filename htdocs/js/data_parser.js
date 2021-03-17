@@ -8,6 +8,8 @@ var rateLimit = 0;
 
 var capTimer = 0;
 
+var whoTimer = 0;
+
 function parseData(e){
 	updateServers = true;
 	if(e.substr(0,1) == "o"){
@@ -35,7 +37,6 @@ function parseData(e){
 			if(jsonData[i].length == 2){
 				
 				if(data == ""){
-                        console.log(info.auth.type);
                         if(info.auth.type == "SASL External"){
                             send("SASL " + info.server + ":" + (info.ssl ? "+"+info.port : info.port) + " " + svr.name);
                         }else{
@@ -194,6 +195,16 @@ function parseData(e){
                     break;
                 case E.RPL_ENDOFWHO:
                     svr.lastWho = Date.now();
+                    if(svr.whoPolling == false){
+                        /* The server is not using who polling, so we just poll who consecutively */
+                        svr.whoPollList.splice(0, 1);
+                        if(svr.whoPollList.length > 0){
+                            setTimeout(function(){
+                                send("WHO " + svr.whoPollList[0]);
+                            },2000);
+                            
+                        }
+                    }
                     break;
                  
                 case E.ERR_SASL_AUTH:
@@ -288,7 +299,6 @@ function parseData(e){
                         case "NEW":
 							var mycaps = ["multi-prefix", "away-notify", "cap-notify", "extended-join", "userhost-in-names"];
 							var scaps = cData.split(" ");
-                            console.log(cData);
                             if(info.auth.type == "SASL Plain") mycaps.push("sasl");
                             
 							for(var i in scaps){
@@ -518,6 +528,13 @@ function parseData(e){
 									content: []
 								}
 							)
+                            clearTimeout(whoTimer);
+                            whoTimer = setTimeout(function(){
+                                if(svr.whoPolling == false){
+                                    send("WHO " + svr.whoPollList[0]);
+                                }
+                            },3000);
+                            
                             if(svr.whoPollList.includes(cData.toLowerCase())) svr.whoPollList.splice(svr.whoPollList.indexOf(cData.toLowerCase()), 1);
                             svr.whoPollList.unshift(cData.toLowerCase());
                             if(settings.focusonjoin){

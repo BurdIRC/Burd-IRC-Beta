@@ -25,12 +25,14 @@ var whoPollTimer = setInterval(function(){
                 }
             }
         }else{
+            /*
             if(svr.whoPollList.length > 0){
                 burd.controlServer.send(JSON.stringify(
                     [":" + svr.socket + " WHO " + svr.whoPollList[0]]
                 ));
                 svr.whoPollList.splice(0, 1);
             }
+            */
         }
     }
 
